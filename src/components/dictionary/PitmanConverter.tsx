@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { SentenceResult } from "@/app/(marketing)/dictionary/SentenceResult";
+import { OutlineDisplay } from "./OutlineDisplay";
 import type { SentenceOutlineResult } from "@/features/dictionary/pitman-sentence-generator";
+import type { DictionaryEntry } from "@/types";
 
 export function PitmanConverter() {
   const [input, setInput] = useState("");
-  const [result, setResult] = useState<SentenceOutlineResult | null>(null);
+  const [result, setResult] = useState<{ type: "sentence"; data: SentenceOutlineResult } | { type: "word"; data: DictionaryEntry } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -22,11 +24,13 @@ export function PitmanConverter() {
       const data = await res.json();
       if (data && data.type === "sentence") {
         const { type, ...rest } = data;
-        setResult(rest as SentenceOutlineResult);
+        setResult({ type: "sentence", data: rest as SentenceOutlineResult });
+      } else if (Array.isArray(data) && data.length > 0) {
+        setResult({ type: "word", data: data[0] as DictionaryEntry });
       } else {
-        setError("Could not generate sentence outlines. Try different wording.");
+        setError("Could not generate outlines. Try different wording.");
       }
-    } catch (e) {
+    } catch {
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
@@ -39,7 +43,7 @@ export function PitmanConverter() {
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Type or paste a full sentence or paragraph here..."
+          placeholder="Type a word, sentence, or paragraph here..."
           className="flex-1 min-h-[80px] p-3 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary text-sm resize-y"
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -57,16 +61,18 @@ export function PitmanConverter() {
         </button>
       </div>
 
-      {error && (
-        <p className="text-xs text-destructive">{error}</p>
+      {error && <p className="text-xs text-destructive">{error}</p>}
+
+      {result?.type === "sentence" && (
+        <SentenceResult
+          sentence={result.data.sentence}
+          senseGroups={result.data.senseGroups}
+          fullOutline={result.data.fullOutline}
+        />
       )}
 
-      {result && (
-        <SentenceResult
-          sentence={result.sentence}
-          senseGroups={result.senseGroups}
-          fullOutline={result.fullOutline}
-        />
+      {result?.type === "word" && result.data.outline && (
+        <OutlineDisplay outline={result.data.outline} />
       )}
     </div>
   );
