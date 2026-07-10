@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 const STENO_URL = "https://steno.tu-clausthal.de/Pitman.php";
 
 export async function GET(req: Request) {
