@@ -85,7 +85,7 @@ export function WordCard({
 
         {outline && outline !== "—" && (
           <div className="mt-6">
-            <OutlineDisplay outline={outline} />
+            <OutlineDisplay outline={outline} text={word} />
           </div>
         )}
 

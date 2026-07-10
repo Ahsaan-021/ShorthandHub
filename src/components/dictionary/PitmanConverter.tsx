@@ -72,7 +72,7 @@ export function PitmanConverter() {
       )}
 
       {result?.type === "word" && result.data.outline && (
-        <OutlineDisplay outline={result.data.outline} />
+        <OutlineDisplay outline={result.data.outline} text={result.data.word} />
       )}
     </div>
   );

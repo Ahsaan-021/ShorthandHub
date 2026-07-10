@@ -30,7 +30,7 @@ export function SentenceResult({ sentence, senseGroups, fullOutline }: SentenceR
         </div>
 
         {fullOutline ? (
-          <OutlineDisplay outline={fullOutline} />
+          <OutlineDisplay outline={fullOutline} text={sentence} />
         ) : (
           <div className="p-4 rounded-lg bg-muted/30 border border-dashed text-center text-sm text-muted-foreground">
             No stroke outline for this input
