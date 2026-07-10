@@ -64,35 +64,35 @@ const CONTRACTIONS: Record<string, string> = {
 }
 
 const CONSONANT_MAP: Record<string, { stroke: string; heavy: boolean; dir: string; desc: string }> = {
-  p: { stroke: "P", heavy: false, dir: "down-straight", desc: "light down-straight stroke (as in P)" },
-  b: { stroke: "B", heavy: true, dir: "down-straight", desc: "heavy down-straight stroke (as in B)" },
-  t: { stroke: "T", heavy: false, dir: "down-straight", desc: "light down-straight stroke (as in T)" },
-  d: { stroke: "D", heavy: true, dir: "down-straight", desc: "heavy down-straight stroke (as in D)" },
-  k: { stroke: "K", heavy: false, dir: "down-straight", desc: "light down-straight stroke (as in K)" },
-  g: { stroke: "G", heavy: true, dir: "down-straight", desc: "heavy down-straight stroke (as in G)" },
-  f: { stroke: "F", heavy: false, dir: "up-straight", desc: "light up-straight stroke (as in F)" },
-  v: { stroke: "V", heavy: true, dir: "up-straight", desc: "heavy up-straight stroke (as in V)" },
-  s: { stroke: "S", heavy: false, dir: "up-curve", desc: "light up-curve stroke (as in S)" },
-  z: { stroke: "Z", heavy: true, dir: "up-curve", desc: "heavy up-curve stroke (as in Z)" },
-  l: { stroke: "L", heavy: false, dir: "curve-down", desc: "light clockwise curve (as in L)" },
-  r: { stroke: "R", heavy: true, dir: "curve-up", desc: "heavy anticlockwise curve (as in R)" },
-  m: { stroke: "M", heavy: true, dir: "curve-down", desc: "heavy clockwise curve (as in M)" },
-  n: { stroke: "N", heavy: false, dir: "curve-down", desc: "light clockwise curve (as in N)" },
-  w: { stroke: "W", heavy: false, dir: "hook-up", desc: "light upward hook (as in W)" },
-  y: { stroke: "Y", heavy: false, dir: "hook-down", desc: "light downward hook (as in Y)" },
-  h: { stroke: "H", heavy: false, dir: "dot", desc: "light dot (as in H)" },
+  p: { stroke: "P", heavy: false, dir: "down-straight", desc: "light down-straight angle 45° (as in P)" },
+  b: { stroke: "B", heavy: true, dir: "down-straight", desc: "heavy down-straight angle 45° (as in B)" },
+  t: { stroke: "T", heavy: false, dir: "vertical", desc: "light vertical downstroke (as in T)" },
+  d: { stroke: "D", heavy: true, dir: "vertical", desc: "heavy vertical downstroke (as in D)" },
+  k: { stroke: "K", heavy: false, dir: "horizontal", desc: "light horizontal left-to-right (as in K)" },
+  g: { stroke: "G", heavy: true, dir: "horizontal", desc: "heavy horizontal left-to-right (as in G)" },
+  f: { stroke: "F", heavy: false, dir: "down-straight", desc: "light down-straight angle 45° (as in F)" },
+  v: { stroke: "V", heavy: true, dir: "down-straight", desc: "heavy down-straight angle 45° (as in V)" },
+  s: { stroke: "S", heavy: false, dir: "down-curve", desc: "light down-curve stroke (as in S)" },
+  z: { stroke: "Z", heavy: true, dir: "down-curve", desc: "heavy down-curve stroke (as in Z)" },
+  l: { stroke: "L", heavy: false, dir: "down-curve", desc: "light curve stroke (as in L)" },
+  r: { stroke: "R", heavy: false, dir: "down-straight", desc: "light down-straight angle 45° (Ray stroke, as in R)" },
+  m: { stroke: "M", heavy: true, dir: "down-curve", desc: "heavy curve stroke (as in M)" },
+  n: { stroke: "N", heavy: false, dir: "down-curve", desc: "light curve stroke (as in N)" },
+  w: { stroke: "W", heavy: false, dir: "up-curve", desc: "light upward curve (as in W)" },
+  y: { stroke: "Y", heavy: false, dir: "down-curve", desc: "light downward curve (as in Y)" },
+  h: { stroke: "H", heavy: false, dir: "dot", desc: "light dot (as in H, often omitted)" },
 }
 
 const DIGRAPH_MAP: Record<string, { stroke: string; heavy: boolean; dir: string; desc: string }> = {
-  ch: { stroke: "CH", heavy: false, dir: "down-straight", desc: "light down-straight stroke (CH sound)" },
-  sh: { stroke: "SH", heavy: false, dir: "up-straight", desc: "light up-straight stroke (SH sound)" },
-  th: { stroke: "TH", heavy: false, dir: "up-straight", desc: "light up-straight stroke (TH unvoiced)" },
-  wh: { stroke: "W", heavy: false, dir: "hook-up", desc: "light upward hook (WH sound)" },
-  ng: { stroke: "NG", heavy: false, dir: "curve-down-tail", desc: "light downward curve with tail (NG)" },
-  nk: { stroke: "NK", heavy: true, dir: "curve-down-tail", desc: "heavy downward curve with tail (NK)" },
-  zh: { stroke: "ZH", heavy: true, dir: "up-straight", desc: "heavy up-straight stroke (ZH sound)" },
-  dh: { stroke: "DH", heavy: true, dir: "up-straight", desc: "heavy up-straight stroke (DH voiced TH)" },
-  ck: { stroke: "K", heavy: false, dir: "down-straight", desc: "light down-straight stroke (K sound)" },
+  ch: { stroke: "CH", heavy: false, dir: "down-straight", desc: "light steep down-straight angle 60° (CH sound)" },
+  sh: { stroke: "SH", heavy: false, dir: "down-curve", desc: "light down-curve stroke (SH sound)" },
+  th: { stroke: "TH", heavy: false, dir: "vertical", desc: "light vertical downstroke (TH unvoiced)" },
+  wh: { stroke: "W", heavy: false, dir: "up-curve", desc: "light upward curve (WH sound)" },
+  ng: { stroke: "NG", heavy: false, dir: "down-curve", desc: "light curve stroke (NG sound)" },
+  nk: { stroke: "NK", heavy: true, dir: "down-curve", desc: "heavy curve stroke (NK sound)" },
+  zh: { stroke: "ZH", heavy: true, dir: "down-curve", desc: "heavy down-curve stroke (ZH sound)" },
+  dh: { stroke: "DH", heavy: true, dir: "vertical", desc: "heavy vertical downstroke (DH voiced TH)" },
+  ck: { stroke: "K", heavy: false, dir: "horizontal", desc: "light horizontal left-to-right (K sound)" },
 }
 
 const VOWELS = new Set(["a", "e", "i", "o", "u"])
@@ -286,8 +286,8 @@ export function generatePitmanOutline(word: string): GeneratedOutline {
       const next = i + 1 < clean.length ? clean[i + 1] : ""
       const stroke = "iey".includes(next) ? "S" : "K"
       const desc = "iey".includes(next)
-        ? "S: light up-curve stroke (soft C → S sound)"
-        : "K: light down-straight stroke (hard C → K sound)"
+        ? "S: light down-curve stroke (soft C → S sound)"
+        : "K: light horizontal stroke (hard C → K sound)"
       if (ch !== lastChar) {
         strokes.push(stroke)
         rules.push(desc)
@@ -302,7 +302,7 @@ export function generatePitmanOutline(word: string): GeneratedOutline {
     if (ch === "q") {
       if (ch !== lastChar) {
         strokes.push("K")
-        rules.push("K: light down-straight stroke (Q → K sound)")
+        rules.push("K: light horizontal stroke (Q → K sound)")
         lastStroke = "K"
         lastChar = ch
       }

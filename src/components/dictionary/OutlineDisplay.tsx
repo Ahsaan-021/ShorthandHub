@@ -24,25 +24,41 @@ interface Point {
 
 const STROKE_NAMES = ["NG", "NK", "CH", "SH", "TH", "DH", "ZH"];
 
+// Pitman New Era stroke definitions based on authoritative sources:
+// - P/B: 45° downward ↘ (slant-up direction = top-left to bottom-right)
+// - F/V: 45° downward ↘ (same as P/B)
+// - T/D: vertical ↓
+// - TH/DH: vertical ↓ (same as T/D)
+// - CH/J: ~60° from horizontal, steep downward ↘
+// - K/G: horizontal →
+// - S/Z: curve downward (∩-shaped)
+// - SH/ZH: curve downward (∩-shaped, distinct from S)
+// - R: 45° downward ↘ light (Ray) — also treated as main R
+// - M: curve ∩-shaped, thick
+// - N: curve ∩-shaped, thin
+// - L: curve ∩-shaped, thin
+// - NG: curve ∩-shaped, thick (like N but thick)
+// - W/Y: curved coalescents
+// - H: dot
 const STROKE_MAP: Record<string, StrokeSeg> = {
-  P: { type: "vertical", heavy: false, label: "P", angle: 90 },
-  B: { type: "vertical", heavy: true, label: "B", angle: 90 },
-  T: { type: "slant-down", heavy: false, label: "T", angle: 70 },
-  D: { type: "slant-down", heavy: true, label: "D", angle: 70 },
-  SH: { type: "slant-down", heavy: false, label: "SH", angle: 60 },
-  ZH: { type: "slant-down", heavy: true, label: "ZH", angle: 60 },
-  CH: { type: "slant-down", heavy: false, label: "CH", angle: 65 },
-  J: { type: "slant-down", heavy: true, label: "J", angle: 65 },
+  P: { type: "slant-up", heavy: false, label: "P", angle: 45 },
+  B: { type: "slant-up", heavy: true, label: "B", angle: 45 },
+  T: { type: "vertical", heavy: false, label: "T", angle: 90 },
+  D: { type: "vertical", heavy: true, label: "D", angle: 90 },
+  SH: { type: "curve-down", heavy: false, label: "SH", angle: 0 },
+  ZH: { type: "curve-down", heavy: true, label: "ZH", angle: 0 },
+  CH: { type: "slant-up", heavy: false, label: "CH", angle: 60 },
+  J: { type: "slant-up", heavy: true, label: "J", angle: 60 },
   K: { type: "horizontal", heavy: false, label: "K", angle: 0 },
   G: { type: "horizontal", heavy: true, label: "G", angle: 0 },
-  C: { type: "slant-down", heavy: false, label: "C", angle: 60 },
-  F: { type: "slant-up", heavy: false, label: "F", angle: 30 },
-  V: { type: "slant-up", heavy: true, label: "V", angle: 30 },
-  TH: { type: "slant-up", heavy: false, label: "TH", angle: 45 },
-  DH: { type: "slant-up", heavy: true, label: "DH", angle: 45 },
-  R: { type: "slant-up", heavy: true, label: "R", angle: 35 },
-  S: { type: "curve-up", heavy: false, label: "S", angle: 0 },
-  Z: { type: "curve-up", heavy: true, label: "Z", angle: 0 },
+  C: { type: "slant-up", heavy: false, label: "C", angle: 45 },
+  F: { type: "slant-up", heavy: false, label: "F", angle: 45 },
+  V: { type: "slant-up", heavy: true, label: "V", angle: 45 },
+  TH: { type: "vertical", heavy: false, label: "TH", angle: 90 },
+  DH: { type: "vertical", heavy: true, label: "DH", angle: 90 },
+  R: { type: "slant-up", heavy: false, label: "R", angle: 45 },
+  S: { type: "curve-down", heavy: false, label: "S", angle: 0 },
+  Z: { type: "curve-down", heavy: true, label: "Z", angle: 0 },
   N: { type: "curve-down", heavy: false, label: "N", angle: 0 },
   M: { type: "curve-down", heavy: true, label: "M", angle: 0 },
   L: { type: "curve-down", heavy: false, label: "L", angle: 0 },
@@ -90,20 +106,20 @@ function strokePath(seg: StrokeSeg): string {
       return `M -${len/2},0 L ${len/2},0`;
     case "slant-down": {
       const rad = (seg.angle * Math.PI) / 180;
-      const dx = -Math.cos(rad) * len/2;
+      const dx = Math.cos(rad) * len/2;
       const dy = Math.sin(rad) * len/2;
-      return `M ${-dx},${-dy} L ${dx},${dy}`;
+      return `M ${dx},${-dy} L ${-dx},${dy}`;
     }
     case "slant-up": {
       const rad = (seg.angle * Math.PI) / 180;
       const dx = Math.cos(rad) * len/2;
-      const dy = -Math.sin(rad) * len/2;
-      return `M ${-dx},${dy} L ${dx},${-dy}`;
+      const dy = Math.sin(rad) * len/2;
+      return `M ${-dx},${-dy} L ${dx},${dy}`;
     }
     case "curve-down":
-      return `M -20,0 Q -14,18 20,0`;
+      return `M -20,0 Q -12,18 20,0`;
     case "curve-up":
-      return `M -20,0 Q -14,-18 20,0`;
+      return `M -20,0 Q -12,-18 20,0`;
     case "dot":
     case "circle":
       return "";
@@ -119,11 +135,11 @@ function strokeExit(seg: StrokeSeg): Point {
     case "horizontal": return { x: len/2, y: 0 };
     case "slant-down": {
       const rad = (seg.angle * Math.PI) / 180;
-      return { x: Math.cos(rad) * len/2, y: Math.sin(rad) * len/2 };
+      return { x: -Math.cos(rad) * len/2, y: Math.sin(rad) * len/2 };
     }
     case "slant-up": {
       const rad = (seg.angle * Math.PI) / 180;
-      return { x: Math.cos(rad) * len/2, y: -Math.sin(rad) * len/2 };
+      return { x: Math.cos(rad) * len/2, y: Math.sin(rad) * len/2 };
     }
     case "curve-down":
     case "curve-up":
@@ -142,11 +158,11 @@ function strokeEntry(seg: StrokeSeg): Point {
     case "horizontal": return { x: -len/2, y: 0 };
     case "slant-down": {
       const rad = (seg.angle * Math.PI) / 180;
-      return { x: -Math.cos(rad) * len/2, y: -Math.sin(rad) * len/2 };
+      return { x: Math.cos(rad) * len/2, y: -Math.sin(rad) * len/2 };
     }
     case "slant-up": {
       const rad = (seg.angle * Math.PI) / 180;
-      return { x: -Math.cos(rad) * len/2, y: Math.sin(rad) * len/2 };
+      return { x: -Math.cos(rad) * len/2, y: -Math.sin(rad) * len/2 };
     }
     case "curve-down":
     case "curve-up":
@@ -161,7 +177,6 @@ function strokeEntry(seg: StrokeSeg): Point {
 function StrokesRenderer({ strokes }: { strokes: StrokeSeg[] }) {
   const elements: React.ReactNode[] = [];
 
-  // Ruled staves
   elements.push(
     <g key="lines">
       <line x1="0" y1="42" x2="10000" y2="42" className="stroke-muted/20" strokeWidth="0.4" strokeDasharray="3,4" />
@@ -181,7 +196,6 @@ function StrokesRenderer({ strokes }: { strokes: StrokeSeg[] }) {
     const cls = seg.heavy ? "stroke-foreground" : "stroke-foreground/65";
     const path = strokePath(seg);
 
-    // Connector from previous stroke exit to this stroke center
     if (prevExit && seg.type !== "dot" && seg.type !== "circle") {
       const entry = strokeEntry(seg);
       const absEntry = { x: x + entry.x, y: 50 + entry.y };
@@ -189,12 +203,12 @@ function StrokesRenderer({ strokes }: { strokes: StrokeSeg[] }) {
       const dy = absEntry.y - prevExit.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist > 1) {
-        const cp1x = prevExit.x + dx * 0.5;
-        const cp1y = prevExit.y + dy * 0.5 - 2;
+        const cpx = prevExit.x + dx * 0.5;
+        const cpy = prevExit.y + dy * 0.5 - 2;
         elements.push(
           <path
             key={`c-${i}`}
-            d={`M ${prevExit.x} ${prevExit.y} Q ${cp1x} ${cp1y} ${absEntry.x} ${absEntry.y}`}
+            d={`M ${prevExit.x} ${prevExit.y} Q ${cpx} ${cpy} ${absEntry.x} ${absEntry.y}`}
             className="fill-none stroke-foreground/35"
             strokeWidth={Math.min(sw, 2.5)}
             strokeLinecap="round"
@@ -253,8 +267,6 @@ export function OutlineDisplay({ outline, className, compact }: OutlineDisplayPr
     return Math.max(w + 20, 400);
   }, [strokes, hasStrokes]);
 
-  const totalWidth = estimatedWidth;
-
   const downloadSVG = useCallback(() => {
     if (!svgRef.current) return;
     const clone = svgRef.current.cloneNode(true) as SVGSVGElement;
@@ -288,7 +300,7 @@ export function OutlineDisplay({ outline, className, compact }: OutlineDisplayPr
 
       <svg
         ref={svgRef}
-        viewBox={`0 0 ${totalWidth} 100`}
+        viewBox={`0 0 ${estimatedWidth} 100`}
         className={cn("w-full", compact ? "h-16" : "h-24")}
         xmlns="http://www.w3.org/2000/svg"
         preserveAspectRatio="xMinYMid meet"
@@ -296,7 +308,7 @@ export function OutlineDisplay({ outline, className, compact }: OutlineDisplayPr
         {hasStrokes ? (
           <StrokesRenderer strokes={strokes} />
         ) : (
-          <text x={totalWidth / 2} y="55" textAnchor="middle" className="fill-muted-foreground text-[11px] font-mono">
+          <text x={estimatedWidth / 2} y="55" textAnchor="middle" className="fill-muted-foreground text-[11px] font-mono">
             {outline}
           </text>
         )}
