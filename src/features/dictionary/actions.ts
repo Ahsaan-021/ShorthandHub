@@ -6,7 +6,16 @@ import { auth } from "@/lib/auth";
 export async function searchDictionary(query: string, courseType?: string) {
   return db.dictionary.findMany({
     where: {
-      word: { contains: query, mode: "insensitive" },
+      ...(query
+        ? {
+            OR: [
+              { word: { contains: query, mode: "insensitive" } },
+              { meaning: { contains: query, mode: "insensitive" } },
+              { outline: { contains: query, mode: "insensitive" } },
+              { rule: { contains: query, mode: "insensitive" } },
+            ],
+          }
+        : {}),
       ...(courseType && { courseType: courseType.toUpperCase() as any }),
     },
     orderBy: { word: "asc" },

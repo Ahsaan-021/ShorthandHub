@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { motion } from "framer-motion";
 import { BookOpen, Eye, EyeOff, Loader2 } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export function LoginForm() {
@@ -107,8 +108,14 @@ export function LoginForm() {
           )}
         </Button>
 
-        <div className="text-center text-xs text-muted-foreground">
+        <div className="text-center text-xs text-muted-foreground space-y-2">
           <p>Demo account: admin@shorthandhub.com / Admin123!</p>
+          <p>
+            Don&apos;t have an account?{" "}
+            <Link href="/auth/register" className="text-primary hover:underline font-medium">
+              Create one
+            </Link>
+          </p>
         </div>
       </form>
     </motion.div>
