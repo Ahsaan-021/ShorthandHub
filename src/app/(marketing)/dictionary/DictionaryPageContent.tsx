@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Heart, Search } from "lucide-react";
+import { Heart, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useDebounce } from "@/hooks/useDebounce";
 import { WordCard } from "@/components/dictionary/WordCard";
@@ -15,22 +15,23 @@ const COURSE_TABS = [
   { label: "Teeline", value: "TEELINE" },
 ] as const;
 
-export function DictionaryPageContent() {
+interface Props {
+  initialEntries: DictionaryEntry[];
+}
+
+export function DictionaryPageContent({ initialEntries }: Props) {
   const [query, setQuery] = useState("");
   const [courseType, setCourseType] = useState("");
-  const [results, setResults] = useState<DictionaryEntry[]>([]);
+  const [results, setResults] = useState<DictionaryEntry[]>(initialEntries);
   const [loading, setLoading] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
   const debouncedQuery = useDebounce(query, 300);
 
   useEffect(() => {
-    if (!debouncedQuery) {
-      setResults([]);
-      return;
-    }
     setLoading(true);
-    const params = new URLSearchParams({ q: debouncedQuery });
+    const params = new URLSearchParams();
+    if (debouncedQuery) params.set("q", debouncedQuery);
     if (courseType) params.set("courseType", courseType);
     fetch(`/api/dictionary?${params}`)
       .then((r) => r.json())
@@ -75,8 +76,16 @@ export function DictionaryPageContent() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search for a word..."
-            className="w-full pl-10 pr-4 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full pl-10 pr-10 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
           />
+          {query && (
+            <button
+              onClick={() => setQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
         <div className="flex items-center justify-between">
@@ -118,10 +127,6 @@ export function DictionaryPageContent() {
       >
         {loading ? (
           <div className="text-center py-12 text-muted-foreground">Searching...</div>
-        ) : !query ? (
-          <div className="text-center py-12 text-muted-foreground">
-            Start typing to search the dictionary
-          </div>
         ) : displayResults.length > 0 ? (
           <div className="grid md:grid-cols-2 gap-4">
             {displayResults.map((entry) => (
@@ -140,7 +145,7 @@ export function DictionaryPageContent() {
           </div>
         ) : (
           <div className="text-center py-12 text-muted-foreground">
-            No results found for &quot;{query}&quot;
+            {query ? `No results found for "${query}"` : "No entries yet"}
           </div>
         )}
       </motion.div>
