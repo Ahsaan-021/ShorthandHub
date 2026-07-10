@@ -12,7 +12,7 @@ export interface Lesson {
   imageUrl: string | null;
   categoryId: string | null;
   category: Category | null;
-  progress: Progress[];
+  progress?: Progress[];
   createdAt: Date;
 }
 
