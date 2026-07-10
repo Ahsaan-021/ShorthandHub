@@ -4,8 +4,8 @@ import { DictionaryPageContent } from "./DictionaryPageContent";
 export const dynamic = "force-dynamic";
 
 export const metadata = generateMetadata({
-  title: "Dictionary",
-  description: "Search thousands of shorthand words with Pitman, Gregg, and Teeline outlines, pronunciations, and rule explanations.",
+  title: "Shorthand Dictionary - Instant Stroke Generator",
+  description: "Type any word to see its Pitman shorthand stroke outline, pronunciation, and rule explanation. Automatic outline generation for any English word.",
   path: "/dictionary",
 });
 

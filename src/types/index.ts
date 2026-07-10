@@ -59,6 +59,7 @@ export interface DictionaryEntry {
   rule: string | null;
   courseType: "PITMAN" | "GREGG" | "TEELINE";
   relatedWords: string | null;
+  isGenerated?: boolean;
 }
 
 export interface BlogPost {

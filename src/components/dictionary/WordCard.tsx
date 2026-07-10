@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Heart, ChevronDown, ChevronUp, Volume2 } from "lucide-react";
+import { Heart, ChevronDown, ChevronUp, Volume2, Sparkles, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OutlineDisplay } from "./OutlineDisplay";
 
@@ -15,6 +15,8 @@ interface WordCardProps {
   isFavorited?: boolean;
   onToggleFavorite?: () => void;
   className?: string;
+  isGenerated?: boolean;
+  singleResult?: boolean;
 }
 
 export function WordCard({
@@ -27,18 +29,38 @@ export function WordCard({
   isFavorited = false,
   onToggleFavorite,
   className,
+  isGenerated,
+  singleResult,
 }: WordCardProps) {
-  const [showRule, setShowRule] = useState(false);
+  const [showRule, setShowRule] = useState(!!isGenerated);
   const [showRelated, setShowRelated] = useState(false);
 
   const relatedList = relatedWords ? relatedWords.split(",").map((w) => w.trim()) : [];
 
   return (
-    <div className={cn("rounded-lg border bg-card overflow-hidden", className)}>
+    <div className={cn(
+      "rounded-lg border bg-card overflow-hidden",
+      singleResult && "max-w-2xl mx-auto",
+      className
+    )}>
       <div className="p-6">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold">{word}</h2>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className={cn("font-bold", singleResult ? "text-3xl" : "text-2xl")}>{word}</h2>
+              {isGenerated && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold rounded-full bg-primary/10 text-primary border border-primary/20">
+                  <Sparkles className="w-3 h-3" />
+                  Generated
+                </span>
+              )}
+              {singleResult && !isGenerated && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold rounded-full bg-green-500/10 text-green-600 border border-green-500/20">
+                  <BookOpen className="w-3 h-3" />
+                  Dictionary Entry
+                </span>
+              )}
+            </div>
             {pronunciation && (
               <div className="flex items-center gap-1 text-muted-foreground">
                 <Volume2 className="w-4 h-4" />
@@ -49,7 +71,7 @@ export function WordCard({
           <button
             onClick={onToggleFavorite}
             className={cn(
-              "p-2 rounded-full transition-colors",
+              "p-2 rounded-full transition-colors shrink-0",
               isFavorited
                 ? "text-red-500 hover:text-red-600"
                 : "text-muted-foreground hover:text-foreground"
@@ -61,10 +83,17 @@ export function WordCard({
 
         <p className="mt-4 text-muted-foreground">{meaning}</p>
 
-        {outline && (
+        {outline && outline !== "—" && (
           <div className="mt-6">
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">Shorthand Outline</h3>
             <OutlineDisplay outline={outline} />
+          </div>
+        )}
+
+        {(!outline || outline === "—") && (
+          <div className="mt-6 p-4 rounded-lg bg-muted/50 border border-dashed text-center">
+            <p className="text-sm text-muted-foreground">
+              No stroke outline available for this word. Try a different word or check the lessons for stroke patterns.
+            </p>
           </div>
         )}
 
@@ -72,13 +101,16 @@ export function WordCard({
           <div className="mt-4">
             <button
               onClick={() => setShowRule(!showRule)}
-              className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className={cn(
+                "flex items-center gap-1 text-sm font-medium transition-colors",
+                showRule ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+              )}
             >
               {showRule ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               Rule Explanation
             </button>
             {showRule && (
-              <div className="mt-2 p-3 rounded-md bg-muted text-sm">
+              <div className="mt-2 p-4 rounded-md bg-muted/70 text-sm whitespace-pre-line leading-relaxed border border-muted">
                 {rule}
               </div>
             )}

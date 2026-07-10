@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "ShorthandHub — Master Shorthand Faster Than Ever",
   description: "Master Pitman, Gregg and Teeline with interactive lessons, AI explanations, quizzes and real practice.",
   manifest: "/manifest.json",
-  icons: { icon: "/favicon.ico" },
+  icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
-import { Heart, Search, X } from "lucide-react";
+import { Heart, Search, X, Keyboard, Type } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useDebounce } from "@/hooks/useDebounce";
 import { WordCard } from "@/components/dictionary/WordCard";
+import { SentenceResult } from "./SentenceResult";
 import type { DictionaryEntry } from "@/types";
+import type { SentenceOutlineResult } from "@/features/dictionary/pitman-sentence-generator";
 
 const COURSE_TABS = [
   { label: "All", value: "" },
@@ -19,14 +21,34 @@ interface Props {
   initialEntries: DictionaryEntry[];
 }
 
+type SearchMode = "word" | "sentence" | "browse";
+
 export function DictionaryPageContent({ initialEntries }: Props) {
   const [query, setQuery] = useState("");
   const [courseType, setCourseType] = useState("");
-  const [results, setResults] = useState<DictionaryEntry[]>(initialEntries);
+  const [wordResults, setWordResults] = useState<DictionaryEntry[]>(initialEntries);
+  const [sentenceResult, setSentenceResult] = useState<SentenceOutlineResult | null>(null);
+  const [searchMode, setSearchMode] = useState<SearchMode>("browse");
   const [loading, setLoading] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
   const debouncedQuery = useDebounce(query, 300);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -35,7 +57,18 @@ export function DictionaryPageContent({ initialEntries }: Props) {
     if (courseType) params.set("courseType", courseType);
     fetch(`/api/dictionary?${params}`)
       .then((r) => r.json())
-      .then(setResults)
+      .then((data) => {
+        if (data && data.type === "sentence") {
+          const { type, ...rest } = data;
+          setSentenceResult(rest as SentenceOutlineResult);
+          setWordResults([]);
+          setSearchMode("sentence");
+        } else if (Array.isArray(data)) {
+          setWordResults(data);
+          setSentenceResult(null);
+          setSearchMode(debouncedQuery ? "word" : "browse");
+        }
+      })
       .finally(() => setLoading(false));
   }, [debouncedQuery, courseType]);
 
@@ -46,8 +79,11 @@ export function DictionaryPageContent({ initialEntries }: Props) {
   }, []);
 
   const displayResults = showFavorites
-    ? results.filter((r) => favorites.includes(r.id))
-    : results;
+    ? wordResults.filter((r) => favorites.includes(r.id))
+    : wordResults;
+
+  const isSingleWordLookup = searchMode === "word" && !debouncedQuery.includes(" ");
+  const isSingleResult = isSingleWordLookup && displayResults.length === 1;
 
   return (
     <div className="space-y-8">
@@ -59,8 +95,7 @@ export function DictionaryPageContent({ initialEntries }: Props) {
       >
         <h1 className="text-4xl font-bold mb-4">Shorthand Dictionary</h1>
         <p className="text-muted-foreground">
-          Search thousands of words with Pitman, Gregg, and Teeline outlines,
-          pronunciations, and rule explanations.
+          Type a word for its Pitman shorthand outline, or type a full sentence to see phrase-connected outlines.
         </p>
       </motion.div>
 
@@ -73,19 +108,32 @@ export function DictionaryPageContent({ initialEntries }: Props) {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
+            ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search for a word..."
-            className="w-full pl-10 pr-10 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+            placeholder="Type a word or sentence for Pitman shorthand outlines..."
+            className="w-full pl-10 pr-20 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary text-base"
           />
-          {query && (
-            <button
-              onClick={() => setQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+            {query && debouncedQuery.includes(" ") && (
+              <span className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono rounded bg-primary/10 text-primary border border-primary/20">
+                <Type className="w-2.5 h-2.5" />
+                Sentence
+              </span>
+            )}
+            {query && (
+              <button
+                onClick={() => setQuery("")}
+                className="text-muted-foreground hover:text-foreground p-1"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono rounded border bg-muted text-muted-foreground">
+              <Keyboard className="w-2.5 h-2.5" />
+              <span>⌘K</span>
+            </kbd>
+          </div>
         </div>
 
         <div className="flex items-center justify-between">
@@ -118,6 +166,13 @@ export function DictionaryPageContent({ initialEntries }: Props) {
             Favorites
           </button>
         </div>
+
+        {debouncedQuery && debouncedQuery.includes(" ") && (
+          <div className="bg-muted/50 rounded-lg p-3 border text-xs text-muted-foreground">
+            <p className="font-medium mb-1">How sentence mode works:</p>
+            <p>The sentence is split into <strong>sense groups</strong> (natural Pitman phrases). Each sense group shows its connected stroke outline. Common phrases like &ldquo;I have been&rdquo;, &ldquo;in the&rdquo;, or &ldquo;there is&rdquo; are recognized and joined automatically.</p>
+          </div>
+        )}
       </motion.div>
 
       <motion.div
@@ -127,8 +182,14 @@ export function DictionaryPageContent({ initialEntries }: Props) {
       >
         {loading ? (
           <div className="text-center py-12 text-muted-foreground">Searching...</div>
+        ) : searchMode === "sentence" && sentenceResult ? (
+          <SentenceResult
+            sentence={sentenceResult.sentence}
+            senseGroups={sentenceResult.senseGroups}
+            fullOutline={sentenceResult.fullOutline}
+          />
         ) : displayResults.length > 0 ? (
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className={cn(isSingleResult ? "" : "grid md:grid-cols-2 gap-4")}>
             {displayResults.map((entry) => (
               <WordCard
                 key={entry.id}
@@ -140,12 +201,23 @@ export function DictionaryPageContent({ initialEntries }: Props) {
                 relatedWords={entry.relatedWords}
                 isFavorited={favorites.includes(entry.id)}
                 onToggleFavorite={() => toggleFavorite(entry.id)}
+                isGenerated={entry.isGenerated}
+                singleResult={isSingleResult}
               />
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 text-muted-foreground">
-            {query ? `No results found for "${query}"` : "No entries yet"}
+          <div className="text-center py-12 text-muted-foreground max-w-md mx-auto space-y-2">
+            <p className="text-lg">
+              {query
+                ? `No results for "${query}"`
+                : "Type a word or sentence above to see Pitman shorthand outlines"}
+            </p>
+            {!query && (
+              <p className="text-sm text-muted-foreground/70">
+                Type any English word to generate its Pitman shorthand stroke sequence, or type a full sentence to see phrase-connected outlines with sense groups.
+              </p>
+            )}
           </div>
         )}
       </motion.div>

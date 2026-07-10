@@ -1,262 +1,459 @@
 -- ============================================================
--- COMPREHENSIVE PITMAN SHORTHAND SEED DATA
--- All 24 Consonants, Vowels, Diphthongs, Key Words, Exercises
+-- COMPLETE PITMAN SHORTHAND COURSE
+-- All 24 Consonants, Vowels, Diphthongs, Joining, Hooks,
+-- Circles, Halving, Doubling, Prefixes, Suffixes, Phrasing
 -- ============================================================
 
--- Categories (Stroke Groups)
+-- Clean existing data
+DELETE FROM "Progress"; DELETE FROM "PracticeSession"; DELETE FROM "Bookmark";
+DELETE FROM "DictionaryFavorite"; DELETE FROM "UserAchievement"; DELETE FROM "BlogComment";
+DELETE FROM "Blog"; DELETE FROM "QuizResult"; DELETE FROM "Quiz";
+DELETE FROM "Exercise"; DELETE FROM "Lesson"; DELETE FROM "Dictionary"; DELETE FROM "Category";
+DELETE FROM "User";
+
+-- ============================================================
+-- CATEGORIES (7 groups)
+-- ============================================================
 INSERT INTO "Category" (id, name, slug) VALUES
-  ('cat-straight-down', 'Straight Downward Strokes', 'straight-downward'),
-  ('cat-straight-up', 'Straight Upward Strokes', 'straight-upward'),
-  ('cat-curved', 'Curved Strokes', 'curved'),
-  ('cat-vowels', 'Vowels and Diphthongs', 'vowels'),
-  ('cat-hooks-circles', 'Hooks, Circles and Loops', 'hooks-circles'),
-  ('cat-phrasing', 'Phrasing and Contractions', 'phrasing')
-ON CONFLICT (slug) DO NOTHING;
+('cat-g1', 'Group 1: Downward Straight Strokes (P-B, T-D, CH-J, K-G)', 'group-1-downward-straight'),
+('cat-g2', 'Group 2: Upward Straight Strokes (F-V, TH-DH, S-Z, SH-ZH)', 'group-2-upward-straight'),
+('cat-g3', 'Group 3: Curved Strokes (L-R, M-N, NG-NK, W-Y, H)', 'group-3-curved'),
+('cat-g4', 'Vowels and Diphthongs', 'group-4-vowels'),
+('cat-g5', 'Joining and Hook Strokes', 'group-5-joining-hooks'),
+('cat-g6', 'Circles, Loops, Halving and Doubling', 'group-6-circles-halving'),
+('cat-g7', 'Advanced: Prefixes, Suffixes, Phrasing, Speed', 'group-7-advanced');
 
 -- ============================================================
--- DICTIONARY — All 24 Basic Consonant Strokes
--- outline field uses: | (light straight), || (heavy straight),
--- / (light upward), // (heavy upward),
--- ~ (light curve), ~~ (heavy curve)
--- . (dot), o (circle)
+-- BLOG POSTS (one per category, with cover images)
 -- ============================================================
-
--- GROUP 1: STRAIGHT DOWNWARD STROKES (P B T D CH J K G)
-INSERT INTO "Dictionary" (id, word, slug, meaning, outline, rule, course_type, pronunciation) VALUES
-('dic-p', 'P', 'p-stroke', 'Voiceless explosive — as in "pie"', 'P', 'Light downward straight stroke. Top to bottom. Thin line.', 'PITMAN', 'P'),
-('dic-b', 'B', 'b-stroke', 'Voiced explosive — as in "buy"', 'B', 'Heavy downward straight stroke. Thick line version of P.', 'PITMAN', 'B'),
-('dic-t', 'T', 't-stroke', 'Voiceless dental — as in "tie"', 't', 'Light downward straight stroke. Same as P but different position.', 'PITMAN', 'T'),
-('dic-d', 'D', 'd-stroke', 'Voiced dental — as in "die"', 'd', 'Heavy downward straight stroke. Thick version of T.', 'PITMAN', 'D'),
-('dic-ch', 'CH', 'ch-stroke', 'Voiceless affricate — as in "cheap"', 'CH', 'Light downward straight stroke. Written same direction as P/T.', 'PITMAN', 'CH'),
-('dic-j', 'J', 'j-stroke', 'Voiced affricate — as in "jeep"', 'J', 'Heavy downward straight stroke. Thick version of CH.', 'PITMAN', 'J'),
-('dic-k', 'K', 'k-stroke', 'Voiceless velar — as in "key"', 'K', 'Light downward straight stroke. Light tick.', 'PITMAN', 'K'),
-('dic-g', 'G', 'g-stroke', 'Voiced velar — as in "go"', 'G', 'Heavy downward straight stroke. Thick version of K.', 'PITMAN', 'G')
-ON CONFLICT (slug) DO NOTHING;
-
--- GROUP 2: STRAIGHT UPWARD STROKES (F V TH DH S Z SH ZH)
-INSERT INTO "Dictionary" (id, word, slug, meaning, outline, rule, course_type, pronunciation) VALUES
-('dic-f', 'F', 'f-stroke', 'Voiceless labiodental — as in "fee"', 'F', 'Light upward straight stroke. Bottom to top.', 'PITMAN', 'F'),
-('dic-v', 'V', 'v-stroke', 'Voiced labiodental — as in "vee"', 'V', 'Heavy upward straight stroke. Thick version of F.', 'PITMAN', 'V'),
-('dic-th', 'TH', 'th-stroke', 'Voiceless dental — as in "thin"', 'TH', 'Light upward straight stroke. Distinct from F direction.', 'PITMAN', 'TH'),
-('dic-dh', 'DH', 'dh-stroke', 'Voiced dental — as in "the"', 'DH', 'Heavy upward straight stroke. Thick version of TH.', 'PITMAN', 'DH'),
-('dic-s', 'S', 's-stroke', 'Voiceless sibilant — as in "see"', 'S', 'Light upward curved stroke. Written upward.', 'PITMAN', 'S'),
-('dic-z', 'Z', 'z-stroke', 'Voiced sibilant — as in "zoo"', 'Z', 'Heavy upward curved stroke. Thick version of S.', 'PITMAN', 'Z'),
-('dic-sh', 'SH', 'sh-stroke', 'Voiceless palatal — as in "ship"', 'SH', 'Light upward stroke. Distinct shape from S.', 'PITMAN', 'SH'),
-('dic-zh', 'ZH', 'zh-stroke', 'Voiced palatal — as in "measure"', 'ZH', 'Heavy upward stroke. Thick version of SH.', 'PITMAN', 'ZH')
-ON CONFLICT (slug) DO NOTHING;
-
--- GROUP 3: CURVED STROKES (L R M N NG NK W Y H)
-INSERT INTO "Dictionary" (id, word, slug, meaning, outline, rule, course_type, pronunciation) VALUES
-('dic-l', 'L', 'l-stroke', 'Lateral approximant — as in "lie"', '~', 'Light clockwise curve. Written downward.', 'PITMAN', 'L'),
-('dic-r', 'R', 'r-stroke', 'Approximant — as in "ray"', '~~', 'Heavy anticlockwise curve. Thick version.', 'PITMAN', 'R'),
-('dic-m', 'M', 'm-stroke', 'Voiced bilabial nasal — as in "me"', 'M', 'Heavy clockwise curve. Written downward.', 'PITMAN', 'M'),
-('dic-n', 'N', 'n-stroke', 'Voiced alveolar nasal — as in "no"', 'N', 'Light clockwise curve. Lighter version of M.', 'PITMAN', 'N'),
-('dic-ng', 'NG', 'ng-stroke', 'Velar nasal — as in "sing"', '~', 'Light curved stroke. Distinct hook shape.', 'PITMAN', 'NG'),
-('dic-nk', 'NK', 'nk-stroke', 'Velar nasal + K — as in "sink"', '~', 'Heavy version of NG stroke.', 'PITMAN', 'NK'),
-('dic-w', 'W', 'w-stroke', 'Labiovelar approximant — as in "we"', 'W', 'Light curved stroke. Written with distinct hook.', 'PITMAN', 'W'),
-('dic-y', 'Y', 'y-stroke', 'Palatal approximant — as in "yes"', 'Y', 'Light curved tick. Small stroke.', 'PITMAN', 'Y'),
-('dic-h', 'H', 'h-stroke', 'Glottal fricative — as in "he"', 'H', 'Light dot. Placed before the following vowel.', 'PITMAN', 'H')
-ON CONFLICT (slug) DO NOTHING;
+INSERT INTO "Blog" (id, title, slug, excerpt, content, "coverImage", "readingTime", published, featured, "authorName", "categoryId", "createdAt", "updatedAt") VALUES
+('blog-g1', 'Mastering Downward Straight Strokes: P-B, T-D, CH-J, K-G', 'downward-straight-strokes-guide',
+ 'Learn the foundation of Pitman shorthand with downward straight strokes. This guide covers P-B, T-D, CH-J, and K-G with practice tips and common words.',
+ '<h2>Introduction to Downward Straight Strokes</h2><p>In Pitman shorthand, downward straight strokes form the foundation of the writing system. These strokes are written from top to bottom and represent the most frequently used consonants in English.</p><h2>The Strokes</h2><h3>P and B</h3><p>P is a light (thin) downward straight stroke. B is the heavy (thick) version. Practice writing both with consistent pressure to clearly distinguish them.</p><h3>T and D</h3><p>T is light, D is heavy. These are at a slightly different angle from P and B. In standard Pitman, T and D are written at a steeper slant.</p><h3>CH and J</h3><p>CH (light) and J (heavy) represent the affricate sounds. They are written at an angle between the vertical (P/B) and the slanted (T/D) strokes.</p><h3>K and G</h3><p>K (light) and G (heavy) are unique among downward strokes. In Pitman, K and G are actually written horizontally (left to right), not vertically downward.</p><h2>Practice Tips</h2><ul><li>Use light pen pressure for voiceless sounds (P, T, CH, K)</li><li>Use heavy pressure for voiced sounds (B, D, J, G)</li><li>Practice joining strokes together to form complete outlines</li><li>Focus on consistent stroke length and angle</li></ul>',
+ 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&q=80', 8, true, true, 'ShorthandHub Team', 'cat-g1', NOW(), NOW()),
+('blog-g2', 'Upward Straight Strokes: F-V, TH-DH, S-Z, SH-ZH Explained', 'upward-straight-strokes-guide',
+ 'Master the upward straight strokes of Pitman shorthand. Detailed guide on F-V, TH-DH, S-Z, and SH-ZH with examples and exercises.',
+ '<h2>Understanding Upward Strokes</h2><p>Upward straight strokes are written from bottom to top. They represent fricative sounds - consonants produced by forcing air through a narrow channel.</p><h2>The Strokes</h2><h3>F and V</h3><p>F (light) and V (heavy) are upward straight strokes. F is the voiceless labiodental fricative (as in "fee"), while V is its voiced counterpart (as in "vee").</p><h3>TH and DH</h3><p>TH (light, unvoiced as in "thin") and DH (heavy, voiced as in "the") are written at a distinct angle from F and V. The angle difference is crucial for readability.</p><h3>S and Z</h3><p>S (light) and Z (heavy) are upward curve strokes, not straight. S is one of the most common strokes in Pitman, appearing in countless words.</p><h3>SH and ZH</h3><p>SH (light, as in "ship") and ZH (heavy, as in "measure") complete the upward group. They require consistent thickness for proper distinction.</p><h2>Joining Upward Strokes</h2><p>When joining upward strokes, maintain smooth connections without sharp angles. Practice common combinations like TH-S (for "this") and F-R (for "from").</p>',
+ 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&q=80', 7, true, true, 'ShorthandHub Team', 'cat-g2', NOW(), NOW()),
+('blog-g3', 'Curved Strokes in Pitman: L-R, M-N, NG-NK, W-Y, H', 'curved-strokes-pitman-guide',
+ 'A complete guide to curved strokes in Pitman shorthand. Learn L-R, M-N, NG-NK, W-Y, and H with proper technique and common outlines.',
+ '<h2>Curved Strokes Overview</h2><p>Curved strokes add fluidity to Pitman shorthand. Unlike straight strokes that change direction sharply, curves flow smoothly into adjacent strokes.</p><h2>The Strokes</h2><h3>L and R</h3><p>L (light, downward curve) and R (heavy, upward curve) are among the most frequently used curved strokes. L curves clockwise, while R curves anticlockwise.</p><h3>M and N</h3><p>M (heavy) and N (light) are downward curves that sweep to the right. They are longer than L and provide a distinctive shape to outlines.</p><h3>NG and NK</h3><p>NG (light) and NK (heavy) are downward curves with a tail at the end. They represent the velar nasal sounds as in "sing" and "sink".</p><h3>W and Y</h3><p>W (upward hook) and Y (downward hook) are small curved strokes used to represent these approximant sounds.</p><h3>H</h3><p>H is represented by a small dot or light circle positioned before the following stroke.</p><h2>Practice Sequence</h2><p>Practice curves in order: L, R, M, N, NG, NK, W, Y. Focus on consistent curvature and smooth transitions between strokes.</p>',
+ 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=800&q=80', 9, true, true, 'ShorthandHub Team', 'cat-g3', NOW(), NOW()),
+('blog-g4', 'Pitman Vowels and Diphthongs: Complete Reference', 'pitman-vowels-diphthongs-guide',
+ 'Everything you need to know about Pitman shorthand vowels and diphthongs. Learn first-place, second-place, and third-place vowel positioning.',
+ '<h2>Vowels in Pitman Shorthand</h2><p>Unlike consonants which are written with strokes, vowels in Pitman are represented by dots, dashes, and other small marks placed in specific positions relative to the consonant strokes.</p><h2>Vowel Positions</h2><p>There are three vowel positions in Pitman:</p><ul><li><strong>First-place:</strong> Above the stroke (or at the beginning)</li><li><strong>Second-place:</strong> Level with the stroke</li><li><strong>Third-place:</strong> Below the stroke (or at the end)</li></ul><h2>Short Vowels</h2><p>Short vowels are light marks: ă (light dot), ĕ (light dot), ĭ (light dot), ŏ (light dash), ŭ (light dot). The position determines which vowel is indicated.</p><h2>Long Vowels</h2><p>Long vowels are heavy marks: ā (heavy dash), ē (heavy dot), ī (heavy dot), ō (heavy dash), ū (heavy dot).</p><h2>Diphthongs</h2><p>Diphthongs are represented by combined hooks and strokes: OI (combined hook), OW (upward hook), and others.</p><h2>Practice Tips</h2><p>Practice writing vowel marks with precision. The position (first, second, third place) is as important as the mark itself.</p>',
+ 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80', 10, true, true, 'ShorthandHub Team', 'cat-g4', NOW(), NOW()),
+('blog-g5', 'Joining Strokes and Hook Principles in Pitman', 'joining-hook-strokes-guide',
+ 'Learn how strokes join together and master the hook principles in Pitman shorthand. Covers initial hooks, final hooks, and smooth joining techniques.',
+ '<h2>Joining Strokes</h2><p>In Pitman shorthand, strokes are joined together without lifting the pen. The angle at which strokes join is critical for readability.</p><h2>Natural Joins</h2><p>When two strokes share a common direction, they join naturally: vertical to vertical, horizontal to horizontal. The join forms a smooth curve.</p><h2>Acute and Obtuse Angles</h2><p>Strokes joining at acute angles (less than 90°) flow smoothly. Obtuse angles (greater than 90°) require an angled join or a small hook.</p><h2>Initial Hooks</h2><p>Initial hooks for L and R are written at the beginning of a stroke. They modify the stroke to include the L or R sound. For example: P + L hook = PL as in "play".</p><h2>Final Hooks</h2><p>Final hooks for N, F, and V are written at the end of a stroke. They add these sounds to the outline. For example: P + N hook = PN as in "open".</p><h2>Practice Drills</h2><p>Practice joining: P-B joined, T-D joined, K-G with F-V. Then add hooks progressively.</p>',
+ 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&q=80', 8, true, true, 'ShorthandHub Team', 'cat-g5', NOW(), NOW()),
+('blog-g6', 'Circles, Loops, Halving and Doubling in Pitman', 'circles-loops-halving-doubling-guide',
+ 'Master the intermediate techniques of Pitman shorthand: S and Z circles, loops for ST and STR, halving principle for D/T, and doubling for TR/DR/TN.',
+ '<h2>The Circle S and Z</h2><p>The small circle represents S (voiceless) or Z (voiced). It can be written at the beginning, middle, or end of a stroke. A large circle represents S followed by a vowel.</p><h2>Loops for ST and STR</h2><p>A small loop represents ST (as in "best"). A larger loop represents STR (as in "master"). These loops are written at the end of strokes.</p><h2>Halving Principle</h2><p>Halving a stroke (writing it half-length) adds D or T. Light strokes add T, heavy strokes add D. This is one of the most powerful principles in Pitman for brevity.</p><h2>Doubling Principle</h2><p>Doubling a stroke (writing it double-length) adds TR, DR, or TN. This principle saves space and increases speed significantly.</p><h2>Practice Combinations</h2><p>Practice: S-circle on P → PS, halved P → PT (or PD), doubled P → PTR (or PDR). Combine these principles for maximum speed.</p>',
+ 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&q=80', 10, true, true, 'ShorthandHub Team', 'cat-g6', NOW(), NOW()),
+('blog-g7', 'Advanced Pitman: Prefixes, Suffixes, Phrasing, and Speed', 'advanced-pitman-prefixes-suffixes-guide',
+ 'Take your Pitman shorthand to the next level with advanced techniques: common prefixes and suffixes, phrasing for speed, and speed-building strategies.',
+ '<h2>Prefixes in Pitman</h2><p>Common prefixes have special abbreviated forms: con/com (small circle before the stroke), per/pur (small hook), inter/enter (downward hook), and many others.</p><h2>Suffixes in Pitman</h2><p>Suffixes also have shortened forms: -tion/-sion (small dash), -ing (small dot at the end), -ment (M stroke), -ality/-ility (L stroke), and more.</p><h2>Phrasing (Phraseography)</h2><p>Phrasing is the art of writing common word groups without lifting the pen. Examples:</p><ul><li>"I am" → written as one outline</li><li>"I have been" → connected phrase</li><li>"there is" → TH-R + S</li><li>"in the" → N + TH</li><li>"on the other hand" → N + TH + R + ND</li></ul><h2>Speed Building</h2><p>To increase speed: (1) Master all principles, (2) Practice phrasing, (3) Use minimal outlines, (4) Practice with dictation, (5) Set speed goals (60, 80, 100, 120 wpm).</p><h2>Common Business Phrases</h2><p>Practice these business phrases: "I am sorry", "I am glad", "in order to", "as well as", "at the same time", "first of all", "with regard to".</p>',
+ 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80', 12, true, true, 'ShorthandHub Team', 'cat-g7', NOW(), NOW());
 
 -- ============================================================
--- VOWELS (Short, Long, Diphthongs)
+-- DICTIONARY (100+ entries covering ALL Pitman concepts)
 -- ============================================================
 INSERT INTO "Dictionary" (id, word, slug, meaning, outline, rule, course_type, pronunciation) VALUES
-('dic-vowel-a-short', 'ă (short a)', 'short-a', 'Short vowel — as in "cat"', '.', 'Light dot at first-place position (above/beginning of stroke).', 'PITMAN', 'ă'),
-('dic-vowel-a-long', 'ā (long a)', 'long-a', 'Long vowel — as in "palm"', '..', 'Heavy dot at first-place position.', 'PITMAN', 'ā'),
-('dic-vowel-e-short', 'ĕ (short e)', 'short-e', 'Short vowel — as in "bet"', '.', 'Light dot at second-place position (level with stroke).', 'PITMAN', 'ĕ'),
-('dic-vowel-e-long', 'ē (long e)', 'long-e', 'Long vowel — as in "see"', '..', 'Heavy dot at second-place position.', 'PITMAN', 'ē'),
-('dic-vowel-i-short', 'ĭ (short i)', 'short-i', 'Short vowel — as in "sit"', '.', 'Light dot at third-place position (below/end of stroke).', 'PITMAN', 'ĭ'),
-('dic-vowel-i-long', 'ī (long i)', 'long-i', 'Long vowel — as in "ite"', '..', 'Heavy dot at third-place position.', 'PITMAN', 'ī'),
-('dic-vowel-o-short', 'ŏ (short o)', 'short-o', 'Short vowel — as in "hot"', '-', 'Light dash at first-place position.', 'PITMAN', 'ŏ'),
-('dic-vowel-o-long', 'ō (long o)', 'long-o', 'Long vowel — as in "go"', '--', 'Heavy dash at first-place position.', 'PITMAN', 'ō'),
-('dic-vowel-u-short', 'ŭ (short u)', 'short-u', 'Short vowel — as in "cut"', '-', 'Light dash at second-place position.', 'PITMAN', 'ŭ'),
-('dic-vowel-u-long', 'ū (long u)', 'long-u', 'Long vowel — as in "food"', '--', 'Heavy dash at third-place position.', 'PITMAN', 'ū'),
-('dic-diph-i', 'I (diphthong)', 'diphthong-i', 'Diphthong — as in "eye"', 'I', 'Downward hook. First-place position.', 'PITMAN', 'ī'),
-('dic-diph-ow', 'OW (diphthong)', 'diphthong-ow', 'Diphthong — as in "cow"', 'OW', 'Upward hook. Second-place position.', 'PITMAN', 'ow'),
-('dic-diph-oi', 'OI (diphthong)', 'diphthong-oi', 'Diphthong — as in "boy"', 'OI', 'Combined hook. Third-place position.', 'PITMAN', 'oi')
-ON CONFLICT (slug) DO NOTHING;
+
+-- GROUP 1: Downward Straight
+('dic-p', 'P', 'p-stroke', 'Voiceless bilabial plosive. Light downward straight stroke.', 'light-down-straight', 'Thin line from top to bottom. Voiceless sound as in "pie" or "pay". Write with light pen pressure.', 'PITMAN', 'P'),
+('dic-b', 'B', 'b-stroke', 'Voiced bilabial plosive. Heavy downward straight stroke.', 'heavy-down-straight', 'Thick line from top to bottom. Voiced sound as in "buy" or "bay". Thick version of P. Use heavier pen pressure.', 'PITMAN', 'B'),
+('dic-t', 'T', 't-stroke', 'Voiceless alveolar plosive. Light downward straight stroke.', 'light-down-straight', 'Thin line top to bottom. Same shape as P but different sound. As in "tie" or "tea".', 'PITMAN', 'T'),
+('dic-d', 'D', 'd-stroke', 'Voiced alveolar plosive. Heavy downward straight stroke.', 'heavy-down-straight', 'Thick line top to bottom. Voiced version of T. As in "die" or "day".', 'PITMAN', 'D'),
+('dic-ch', 'CH', 'ch-stroke', 'Voiceless palato-alveolar affricate. Light downward stroke.', 'light-down-straight', 'Thin line. As in "cheap" or "chin". Same stroke shape as P/T but distinct by vowel position.', 'PITMAN', 'CH'),
+('dic-j', 'J', 'j-stroke', 'Voiced palato-alveolar affricate. Heavy downward stroke.', 'heavy-down-straight', 'Thick line. As in "jeep" or "gin". Heavy version of CH.', 'PITMAN', 'J'),
+('dic-k', 'K', 'k-stroke', 'Voiceless velar plosive. Light downward straight stroke.', 'light-down-straight', 'Thin line. As in "key" or "kick". Last of the light downward group.', 'PITMAN', 'K'),
+('dic-g', 'G', 'g-stroke', 'Voiced velar plosive. Heavy downward straight stroke.', 'heavy-down-straight', 'Thick line. As in "go" or "give". Heavy version of K.', 'PITMAN', 'G'),
+
+-- GROUP 2: Upward Straight
+('dic-f', 'F', 'f-stroke', 'Voiceless labiodental fricative. Light upward straight stroke.', 'light-up-straight', 'Thin line from bottom to top. As in "fee" or "fie". First of the upward group.', 'PITMAN', 'F'),
+('dic-v', 'V', 'v-stroke', 'Voiced labiodental fricative. Heavy upward straight stroke.', 'heavy-up-straight', 'Thick line from bottom to top. As in "vee" or "vie". Heavy version of F.', 'PITMAN', 'V'),
+('dic-th', 'TH', 'th-stroke', 'Voiceless dental fricative. Light upward straight stroke.', 'light-up-straight', 'Thin upward line. As in "thin" or "think". Distinct from F by angle.', 'PITMAN', 'TH'),
+('dic-dh', 'DH', 'dh-stroke', 'Voiced dental fricative. Heavy upward straight stroke.', 'heavy-up-straight', 'Thick upward line. As in "the" or "this". "The" is written as DH stroke alone.', 'PITMAN', 'DH'),
+('dic-s', 'S', 's-stroke', 'Voiceless alveolar sibilant. Light upward stroke.', 'light-up-curve', 'Light upward curve. As in "see" or "so". S can also be a small circle on other strokes.', 'PITMAN', 'S'),
+('dic-z', 'Z', 'z-stroke', 'Voiced alveolar sibilant. Heavy upward stroke.', 'heavy-up-curve', 'Heavy upward curve. As in "zoo" or "zone". Heavy version of S.', 'PITMAN', 'Z'),
+('dic-sh', 'SH', 'sh-stroke', 'Voiceless postalveolar fricative. Light upward stroke.', 'light-up-straight', 'Light upward line. As in "ship" or "shop". Distinct from F and TH.', 'PITMAN', 'SH'),
+('dic-zh', 'ZH', 'zh-stroke', 'Voiced postalveolar fricative. Heavy upward stroke.', 'heavy-up-straight', 'Heavy upward line. As in "measure" or "pleasure". Heavy version of SH.', 'PITMAN', 'ZH'),
+
+-- GROUP 3: Curved Strokes
+('dic-l', 'L', 'l-stroke', 'Voiced alveolar lateral approximant. Light clockwise curve downward.', 'light-down-curve', 'Light clockwise curve. Written from top to bottom. As in "lie" or "low".', 'PITMAN', 'L'),
+('dic-r', 'R', 'r-stroke', 'Voiced alveolar approximant. Heavy anticlockwise curve downward.', 'heavy-down-curve', 'Heavy anticlockwise curve. Written from top to bottom. As in "ray" or "row".', 'PITMAN', 'R'),
+('dic-m', 'M', 'm-stroke', 'Voiced bilabial nasal. Heavy downward curve.', 'heavy-down-curve', 'Heavy clockwise curve. As in "me" or "may". Nasal sound through the nose.', 'PITMAN', 'M'),
+('dic-n', 'N', 'n-stroke', 'Voiced alveolar nasal. Light downward curve.', 'light-down-curve', 'Light clockwise curve. As in "no" or "knee". Lighter version of M.', 'PITMAN', 'N'),
+('dic-ng', 'NG', 'ng-stroke', 'Voiced velar nasal. Light downward curve with tail.', 'light-down-curve', 'Light curve with distinctive tail. As in "sing" or "ring".', 'PITMAN', 'NG'),
+('dic-nk', 'NK', 'nk-stroke', 'Velar nasal + K. Heavy downward curve with tail.', 'heavy-down-curve', 'Heavy curve with tail. Heavy version of NG. As in "sink" or "think".', 'PITMAN', 'NK'),
+('dic-w', 'W', 'w-stroke', 'Voiced labio-velar approximant. Light upward hook.', 'light-up-hook', 'Light upward hook. As in "we" or "way". Written with upward direction.', 'PITMAN', 'W'),
+('dic-y', 'Y', 'y-stroke', 'Voiced palatal approximant. Light downward hook.', 'light-down-hook', 'Light downward hook. As in "yes" or "yay". Small stroke.', 'PITMAN', 'Y'),
+('dic-h', 'H', 'h-stroke', 'Voiceless glottal fricative. Light dot or tick.', 'dot', 'Light dot or small tick before the vowel. As in "he" or "hi". Not a full stroke.', 'PITMAN', 'H'),
+
+-- VOWELS (10)
+('dic-short-a', 'ă (short a)', 'short-a', 'Short vowel a. Light dot at first place (above/beginning of stroke). As in "cat", "bat", "hat".', 'light-dot-above', 'Light dot placed at first-place position. Write the dot above the consonant stroke or at its beginning.', 'PITMAN', 'ă'),
+('dic-long-a', 'ā (long a)', 'long-a', 'Long vowel a. Heavy dot at first place (above/beginning). As in "palm", "calm", "barn".', 'heavy-dot-above', 'Heavy dot at first-place position. The same position as short a but a heavier mark.', 'PITMAN', 'ā'),
+('dic-short-e', 'ĕ (short e)', 'short-e', 'Short vowel e. Light dot at second place (level with stroke). As in "bet", "get", "set".', 'light-dot-level', 'Light dot at second-place position. Write the dot level with the middle of the stroke.', 'PITMAN', 'ĕ'),
+('dic-long-e', 'ē (long e)', 'long-e', 'Long vowel e. Heavy dot at second place (level). As in "see", "bee", "tree".', 'heavy-dot-level', 'Heavy dot at second-place position. Level with the stroke.', 'PITMAN', 'ē'),
+('dic-short-i', 'ĭ (short i)', 'short-i', 'Short vowel i. Light dot at third place (below/end of stroke). As in "sit", "fit", "bit".', 'light-dot-below', 'Light dot at third-place position. Below or at the end of the stroke.', 'PITMAN', 'ĭ'),
+('dic-long-i', 'ī (long i)', 'long-i', 'Long vowel i. Heavy dot at third place (below/end). As in "bite", "kite", "site".', 'heavy-dot-below', 'Heavy dot at third-place position. Below or at the end of the stroke.', 'PITMAN', 'ī'),
+('dic-short-o', 'ŏ (short o)', 'short-o', 'Short vowel o. Light dash at first place (above). As in "hot", "pot", "lot".', 'light-dash-above', 'Light dash at first-place position. Short horizontal dash above the stroke.', 'PITMAN', 'ŏ'),
+('dic-long-o', 'ō (long o)', 'long-o', 'Long vowel o. Heavy dash at first place (above). As in "go", "so", "no".', 'heavy-dash-above', 'Heavy dash at first-place position. Thick horizontal dash above the stroke.', 'PITMAN', 'ō'),
+('dic-short-u', 'ŭ (short u)', 'short-u', 'Short vowel u. Light dash at second place (level). As in "cut", "but", "hut".', 'light-dash-level', 'Light dash at second-place position. Level with the stroke.', 'PITMAN', 'ŭ'),
+('dic-long-u', 'ū (long u)', 'long-u', 'Long vowel u. Heavy dash at third place (below). As in "food", "mood", "rude".', 'heavy-dash-below', 'Heavy dash at third-place position. Below or at the end of the stroke.', 'PITMAN', 'ū'),
+
+-- DIPHTHONGS (4)
+('dic-diph-i', 'I (diphthong eye)', 'diphthong-eye', 'Diphthong as in "eye", "my", "by". Downward hook at first place.', 'down-hook', 'Downward hook written at first-place position. A small hook pointing downward.', 'PITMAN', 'ī'),
+('dic-diph-ow', 'OW (diphthong ow)', 'diphthong-ow', 'Diphthong as in "cow", "how", "now". Upward hook at second place.', 'up-hook', 'Upward hook written at second-place position. A small hook pointing upward.', 'PITMAN', 'ow'),
+('dic-diph-oi', 'OI (diphthong oi)', 'diphthong-oi', 'Diphthong as in "boy", "toy", "joy". Combined hook at third place.', 'combined-hook', 'Combined hook at third-place position. Both upward and downward elements.', 'PITMAN', 'oi'),
+('dic-diph-u', 'U (diphthong u)', 'diphthong-u', 'Diphthong as in "few", "due", "new". Small upward hook.', 'small-up-hook', 'Small upward hook. Written with a distinct shape.', 'PITMAN', 'ū'),
+
+-- COMMON WORDS (40)
+('dic-the', 'the', 'the', 'Most common word in English. Written with DH stroke alone.', 'DH-heavy-up', 'Standard contraction. Just write the DH heavy upward stroke.', 'PITMAN', 'thē'),
+('dic-and', 'and', 'and', 'Conjunction. Written with N dot or N stroke.', 'N-dot', 'Dot N — standard contraction. A dot written at the N position.', 'PITMAN', 'ănd'),
+('dic-to', 'to', 'to', 'Preposition. Written with upward T stroke.', 'T-up', 'Upward T — standard contraction. T stroke written upward direction.', 'PITMAN', 'tō'),
+('dic-of', 'of', 'of', 'Preposition. Written with F heavy upward.', 'F-heavy-up', 'F heavy upward — contraction for "of".', 'PITMAN', 'ŏv'),
+('dic-in', 'in', 'in', 'Preposition. Written with N light upward curve.', 'N-light-up', 'N light curve alone — standard contraction.', 'PITMAN', 'ĭn'),
+('dic-that', 'that', 'that', 'Demonstrative. TH heavy upward + halved D.', 'TH-heavy-D-halved', 'TH heavy upward stroke followed by a halved D stroke.', 'PITMAN', 'thăt'),
+('dic-have', 'have', 'have', 'Auxiliary verb. H dot + V heavy upward.', 'H-dot-V-heavy', 'Write H as a dot before the V heavy upward stroke.', 'PITMAN', 'hăv'),
+('dic-it', 'it', 'it', 'Pronoun. T stroke with first-place short i dot.', 'T-with-i-dot', 'Light T stroke with a short i light dot at first place.', 'PITMAN', 'ĭt'),
+('dic-for', 'for', 'for', 'Preposition. F heavy upward alone.', 'F-heavy-up', 'Contraction — just the F heavy upward stroke.', 'PITMAN', 'fôr'),
+('dic-with', 'with', 'with', 'Preposition with. W upward hook.', 'W-up-hook', 'Contraction — W upward hook alone.', 'PITMAN', 'wĭth'),
+('dic-this', 'this', 'this', 'Demonstrative this. DH heavy + S circle.', 'DH-S-circle', 'DH heavy upward stroke with an S-circle at the end.', 'PITMAN', 'thĭs'),
+('dic-will', 'will', 'will', 'Will future. L clockwise curve alone.', 'L-curve', 'Contraction — just the L clockwise curve.', 'PITMAN', 'wĭl'),
+('dic-be', 'be', 'be', 'To be. B heavy downward stroke.', 'B-heavy-down', 'B heavy downward stroke alone.', 'PITMAN', 'bē'),
+('dic-can', 'can', 'can', 'Can ability. K + N joining.', 'K-N-join', 'K light downward joining to N light curve.', 'PITMAN', 'kăn'),
+('dic-do', 'do', 'do', 'To do. D heavy downward stroke.', 'D-heavy-down', 'D heavy downward stroke.', 'PITMAN', 'dō'),
+('dic-go', 'go', 'go', 'To go. G heavy downward stroke.', 'G-heavy-down', 'G heavy downward stroke.', 'PITMAN', 'gō'),
+('dic-up', 'up', 'up', 'Up preposition. P light downward.', 'P-light-down', 'P light downward stroke.', 'PITMAN', 'ŭp'),
+('dic-down', 'down', 'down', 'Down direction. D + N joining.', 'D-N-join', 'D heavy downward joining to N light curve.', 'PITMAN', 'down'),
+('dic-what', 'what', 'what', 'What question. W hook + halved T.', 'W-T-halved', 'W upward hook with halved T stroke.', 'PITMAN', 'wŏt'),
+('dic-which', 'which', 'which', 'Which determiner. W hook + CH.', 'W-CH', 'W upward hook joining to CH light downward.', 'PITMAN', 'wĭch'),
+('dic-are', 'are', 'are', 'Are verb. R heavy curve alone.', 'R-heavy-curve', 'Contraction — R heavy anticlockwise curve.', 'PITMAN', 'är'),
+('dic-our', 'our', 'our', 'Our possessive. R heavy with vowel.', 'R-vowel', 'R heavy curve with appropriate vowel position.', 'PITMAN', 'our'),
+('dic-not', 'not', 'not', 'Not negation. N + halved T.', 'N-T-halved', 'N light curve with halved T at the end.', 'PITMAN', 'nŏt'),
+('dic-but', 'but', 'but', 'But conjunction. B + halved T.', 'B-T-halved', 'B heavy downward with halved T.', 'PITMAN', 'bŭt'),
+('dic-all', 'all', 'all', 'All quantity. L with first-place vowel.', 'L-awl', 'L clockwise curve with first-place long vowel.', 'PITMAN', 'ôl'),
+('dic-well', 'well', 'well', 'Well adverb. W + L joining.', 'W-L', 'W upward hook joining to L clockwise curve.', 'PITMAN', 'wĕl'),
+('dic-shall', 'shall', 'shall', 'Shall auxiliary. SH + L joining.', 'SH-L', 'SH light upward joining to L curve.', 'PITMAN', 'shăl'),
+('dic-much', 'much', 'much', 'Much quantity. M + CH joining.', 'M-CH', 'M heavy curve to CH light downward.', 'PITMAN', 'mŭch'),
+('dic-such', 'such', 'such', 'Such determiner. S + CH joining.', 'S-CH', 'S light upward to CH light downward.', 'PITMAN', 'sŭch'),
+('dic-which-2', 'which (alt)', 'which-alternate', 'Which alternate form. W + CH.', 'W-CH-alt', 'Alternative joining of W and CH.', 'PITMAN', 'wĭch'),
+('dic-could', 'could', 'could', 'Could modal. K + halved D.', 'K-D-halved', 'K light downward with halved D.', 'PITMAN', 'kŏŏd'),
+('dic-would', 'would', 'would', 'Would modal. W + halved D.', 'W-D-halved', 'W upward hook with halved D.', 'PITMAN', 'wŏŏd'),
+('dic-should', 'should', 'should', 'Should modal. SH + halved D.', 'SH-D-halved', 'SH light upward with halved D.', 'PITMAN', 'shŏŏd'),
+('dic-their', 'their', 'their', 'Their possessive. DH + R.', 'DH-R', 'DH heavy upward joining to R heavy curve.', 'PITMAN', 'thâr'),
+('dic-there', 'there', 'there', 'There place. DH + R (alternate position).', 'DH-R-alt', 'DH + R with different vowel position from "their".', 'PITMAN', 'thâr'),
+('dic-people', 'people', 'people', 'People noun. P + L with long e.', 'P-L', 'P light downward to L curve with long e vowel.', 'PITMAN', 'pēpl'),
+('dic-mr', 'Mr.', 'mr', 'Mr. title. M + R joining.', 'M-R', 'M heavy curve to R heavy curve.', 'PITMAN', 'mĭstər'),
+('dic-mrs', 'Mrs.', 'mrs', 'Mrs. title. M + R + S circle.', 'M-R-S', 'M heavy curve to R to S-circle.', 'PITMAN', 'mĭsĭz'),
+('dic-put', 'put', 'put', 'Put verb. P + halved T.', 'P-T-halved', 'P light downward with halved T.', 'PITMAN', 'pŏŏt'),
+('dic-give', 'give', 'give', 'Give verb. G + V joining.', 'G-V', 'G heavy downward to V heavy upward.', 'PITMAN', 'gĭv'),
+
+-- HOOKS, CIRCLES, LOOPS
+('dic-r-hook', 'R-hook (example PR)', 'r-hook-pr', 'R-hook adds R to straight strokes. Example: PR blend.', 'PR-hook', 'Hook on the R-curve side of the stroke. Clockwise hook at the beginning. Used with P, B, T, D, CH, J, K, G.', 'PITMAN', 'PR'),
+('dic-l-hook', 'L-hook (example PL)', 'l-hook-pl', 'L-hook adds L to straight strokes. Example: PL blend.', 'PL-hook', 'Hook on the L side of the stroke. Anticlockwise hook at the beginning. Used with P, B, K, G.', 'PITMAN', 'PL'),
+('dic-s-circle-init', 'S-circle (initial)', 's-circle-initial', 'Initial S-circle. Small circle at the beginning of a stroke.', 'initial-S-circle', 'Small circle written clockwise at the start of a stroke. Represents initial S as in SP, ST, SK.', 'PITMAN', 'S'),
+('dic-s-circle-final', 'S-circle (final)', 's-circle-final', 'Final S-circle. Small circle at the end of a stroke.', 'final-S-circle', 'Small circle written anticlockwise at the end of a stroke. Represents final S as in PS, TS, KS.', 'PITMAN', 'S'),
+('dic-sw-loop', 'SW-loop', 'sw-loop', 'SW-loop. Larger loop than S-circle at the beginning.', 'SW-loop', 'Large initial loop for SW sound. Distinguish from S-circle by larger size.', 'PITMAN', 'SW'),
+('dic-st-loop', 'ST-loop', 'st-loop', 'ST-loop. Small loop on opposite side of S-circle.', 'ST-loop', 'Small loop on the opposite side of stroke from S-circle. Represents ST.', 'PITMAN', 'ST'),
+('dic-str-loop', 'STR-loop', 'str-loop', 'STR-loop. Large loop on opposite side for STR.', 'STR-loop', 'Large loop on opposite side of stroke. Represents STR.', 'PITMAN', 'STR'),
+('dic-halving', 'Halving principle', 'halving', 'Halving a stroke adds T (if light) or D (if heavy).', 'halved-stroke', 'Write the stroke at half its normal length. Light halved stroke = +T. Heavy halved stroke = +D.', 'PITMAN', ''),
+('dic-doubling', 'Doubling principle', 'doubling', 'Doubling a curved stroke adds TR, DR, THR, or DHR.', 'doubled-stroke', 'Lengthen curved strokes to double normal length. Adds TR or DR.', 'PITMAN', ''),
+
+-- PHRASES (15)
+('dic-i-am', 'I am', 'i-am', 'Phrase: I + M without lifting pen.', 'I-diph-M', 'Write I diphthong (downward hook) and continue into M curve without lifting.', 'PITMAN', 'ī ăm'),
+('dic-i-have', 'I have', 'i-have', 'Phrase: I (diph) + V.', 'I-diph-V', 'I diphthong continuing into V heavy upward. No pen lift.', 'PITMAN', 'ī hăv'),
+('dic-i-will', 'I will', 'i-will', 'Phrase: I (diph) + L.', 'I-diph-L', 'I diphthong to L curve in one continuous motion.', 'PITMAN', 'ī wĭl'),
+('dic-you-are', 'you are', 'you-are', 'Phrase: Y + R.', 'Y-R', 'Y light hook to R heavy curve without pen lift.', 'PITMAN', 'yō ār'),
+('dic-we-are', 'we are', 'we-are', 'Phrase: W + R.', 'W-R', 'W upward hook to R curve continuously.', 'PITMAN', 'wē ār'),
+('dic-they-are', 'they are', 'they-are', 'Phrase: DH + R.', 'DH-R', 'DH heavy upward to R heavy curve. No break.', 'PITMAN', 'thā ār'),
+('dic-it-is', 'it is', 'it-is', 'Phrase: T + S-circle.', 'T-S-circle', 'T light stroke with S-circle attached. No pen lift.', 'PITMAN', 'ĭt ĭz'),
+('dic-in-the', 'in the', 'in-the', 'Phrase: N + DH.', 'N-DH', 'N light curve to DH heavy upward continuously.', 'PITMAN', 'ĭn thē'),
+('dic-of-the', 'of the', 'of-the', 'Phrase: F + DH.', 'F-DH', 'F heavy upward to DH heavy upward in one motion.', 'PITMAN', 'ŏv thē'),
+('dic-to-be', 'to be', 'to-be', 'Phrase: T-up + B.', 'T-up-B', 'Upward T to B heavy downward. Continuous stroke.', 'PITMAN', 'tō bē'),
+('dic-and-the', 'and the', 'and-the', 'Phrase: N + DH connected.', 'N-DH-phrase', 'N dot/curve to DH. Common pair written together.', 'PITMAN', 'ănd thē'),
+('dic-i-can', 'I can', 'i-can', 'Phrase: I + K + N.', 'I-K-N', 'I diphthong to K to N in one motion.', 'PITMAN', 'ī kăn'),
+('dic-i-do', 'I do', 'i-do', 'Phrase: I + D.', 'I-D', 'I diphthong to D heavy downward.', 'PITMAN', 'ī dō'),
+('dic-i-have-been', 'I have been', 'i-have-been', 'Phrase: I + V + B.', 'I-V-B', 'Three strokes in one motion: I diphthong, V heavy upward, B heavy downward.', 'PITMAN', 'ī hăv bĭn'),
+('dic-we-have', 'we have', 'we-have', 'Phrase: W + V.', 'W-V', 'W upward hook to V heavy upward.', 'PITMAN', 'wē hăv');
 
 -- ============================================================
--- COMMON WORDS WITH PROPER PITMAN OUTLINES
--- ============================================================
-INSERT INTO "Dictionary" (id, word, slug, meaning, outline, rule, course_type, pronunciation) VALUES
-('dic-the', 'the', 'the', 'Definite article', 'DH', 'TH heavy upward — standard contraction.', 'PITMAN', 'thē'),
-('dic-and', 'and', 'and', 'Conjunction', 'N', 'Dot N — standard contraction for "and".', 'PITMAN', 'ănd'),
-('dic-to', 'to', 'to', 'Preposition (direction)', 'T', 'Upward T — standard contraction.', 'PITMAN', 'tō'),
-('dic-of', 'of', 'of', 'Preposition (possession)', 'F', 'F heavy upward — contraction for "of".', 'PITMAN', 'ŏv'),
-('dic-in', 'in', 'in', 'Preposition (position)', 'N', 'N light upward curve — contraction.', 'PITMAN', 'ĭn'),
-('dic-that', 'that', 'that', 'Demonstrative/conjunction', 'TH D', 'TH heavy upward + halved D.', 'PITMAN', 'thăt'),
-('dic-have', 'have', 'have', 'Auxiliary verb', 'H V', 'H dot + V heavy upward.', 'PITMAN', 'hăv'),
-('dic-it', 'it', 'it', 'Third-person pronoun', 't', 'T light tick with first-place dot I.', 'PITMAN', 'ĭt'),
-('dic-for', 'for', 'for', 'Preposition (purpose)', 'F', 'F heavy upward — contraction.', 'PITMAN', 'fôr'),
-('dic-with', 'with', 'with', 'Preposition (accompaniment)', 'W', 'W upward hook — contraction.', 'PITMAN', 'wĭth'),
-('dic-this', 'this', 'this', 'Demonstrative pronoun', 'DH S', 'DH heavy + S circle.', 'PITMAN', 'thĭs'),
-('dic-will', 'will', 'will', 'Auxiliary verb (future)', 'L', 'L clockwise curve — contraction.', 'PITMAN', 'wĭl'),
-('dic-be', 'be', 'be', 'Verb (to exist)', 'B', 'B heavy downward stroke.', 'PITMAN', 'bē'),
-('dic-can', 'can', 'can', 'Modal verb (ability)', 'K N', 'K light downward + N curve.', 'PITMAN', 'kăn'),
-('dic-do', 'do', 'do', 'Verb (to perform)', 'D', 'D heavy downward stroke.', 'PITMAN', 'dō'),
-('dic-go', 'go', 'go', 'Verb (to move)', 'G', 'G heavy downward stroke.', 'PITMAN', 'gō'),
-('dic-up', 'up', 'up', 'Preposition (direction)', 'P', 'P light downward stroke.', 'PITMAN', 'ŭp'),
-('dic-down', 'down', 'down', 'Preposition (direction)', 'D N', 'D heavy + N curve.', 'PITMAN', 'down'),
-('dic-what', 'what', 'what', 'Interrogative pronoun', 'W T', 'W hook + halved T.', 'PITMAN', 'wŏt'),
-('dic-which', 'which', 'which', 'Interrogative determiner', 'W CH', 'W hook + CH light downward.', 'PITMAN', 'wĭch')
-ON CONFLICT (slug) DO NOTHING;
-
--- ============================================================
--- HOOKS, CIRCLES AND LOOPS
--- ============================================================
-INSERT INTO "Dictionary" (id, word, slug, meaning, outline, rule, course_type, pronunciation) VALUES
-('dic-r-hook', 'R-hook', 'r-hook', 'R-hook on straight strokes — PR, BR, TR, DR, KR, GR', 'PR', 'Hook on the R-curve side of stroke. Clockwise hook.', 'PITMAN', 'R'),
-('dic-l-hook', 'L-hook', 'l-hook', 'L-hook on straight strokes — PL, BL, KL, GL', 'PL', 'Hook on the L side of stroke. Anticlockwise hook.', 'PITMAN', 'L'),
-('dic-s-circle', 'S-circle', 's-circle', 'S-circle — initial S or final S on any stroke', 'S', 'Small circle. Initial S clockwise, final S anticlockwise.', 'PITMAN', 'S'),
-('dic-sw-loop', 'SW-loop', 'sw-loop', 'SW-loop — larger than S-circle for SW sound', 'SW', 'Large initial loop. Distinguish from S-circle by size.', 'PITMAN', 'SW'),
-('dic-st-loop', 'ST-loop', 'st-loop', 'ST-loop — on opposite side of stroke from S-circle', 'ST', 'Small loop on the opposite side. Distinguish carefully.', 'PITMAN', 'ST'),
-('dic-str-loop', 'STR-loop', 'str-loop', 'STR-loop — larger loop for initial STR', 'STR', 'Large loop on opposite side for STR blends.', 'PITMAN', 'STR')
-ON CONFLICT (slug) DO NOTHING;
-
--- ============================================================
--- PHRASING — Common Phrase Outlines
--- ============================================================
-INSERT INTO "Dictionary" (id, word, slug, meaning, outline, rule, course_type, pronunciation) VALUES
-('dic-i-am', 'I am', 'i-am', 'Phrase — join I vowel + M', 'I M', 'I diphthong + M curve without lifting.', 'PITMAN', 'ī ăm'),
-('dic-i-have', 'I have', 'i-have', 'Phrase — join I vowel + have', 'I V', 'I diphthong + V heavy upward.', 'PITMAN', 'ī hăv'),
-('dic-i-will', 'I will', 'i-will', 'Phrase — join I + will', 'I L', 'I diphthong + L curve continuously.', 'PITMAN', 'ī wĭl'),
-('dic-you-are', 'you are', 'you-are', 'Phrase — Y + R continuous', 'Y R', 'Y light curve + R heavy curve without pen lift.', 'PITMAN', 'yō ār'),
-('dic-we-are', 'we are', 'we-are', 'Phrase — W + R continuous', 'W R', 'W hook + R curve in one motion.', 'PITMAN', 'wē ār'),
-('dic-they-are', 'they are', 'they-are', 'Phrase — DH + R continuous', 'DH R', 'DH heavy + R curve without lifting.', 'PITMAN', 'thā ār')
-ON CONFLICT (slug) DO NOTHING;
-
--- ============================================================
--- LESSONS — Comprehensive Stroke-by-Stroke
+-- LESSONS (30+ comprehensive lessons covering the full Pitman book)
 -- ============================================================
 
--- L1: P + B (Lip sounds — bilabial plosives)
+-- L1: Introduction to Pitman
 INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
-('l1', 'P and B — The Lip Strokes', 'p-and-b-strokes', 'Master the P (light) and B (heavy) downward straight strokes. The foundation of all Pitman writing.', '## P — Light Downward Stroke\nP is a thin downward straight line. Written from top to bottom.\n\n## B — Heavy Downward Stroke\nB is a thick downward straight line. Same direction as P.\n\n## Practice Words\n- P: pie, pay, pea, paw, pie\n- B: buy, bay, bee, bow, by\n\n## Common Pairs\n- P + B as in "upbeat" — join at natural angle\n- B + P as in "subpar" — lift pen between strokes\n\n## Dictation Practice\nWrite: Pay, bee, pie, bay, up, by, pea, bow, paw, buy', 'The P and B strokes are the first two consonants you will learn. They are written in the same direction (top to bottom) but P is a thin line (light sound) while B is a thick line (heavy sound).\n\nMaster these two strokes thoroughly before moving on. Practice writing them until the motion is automatic.\n\nRemember: P is voiceless (whispered), B is voiced (with vocal cord vibration).', '1. P = thin downward straight line\n2. B = thick downward straight line\n3. Both written top to bottom\n4. P is like whispering pa\n5. B is like saying ba with voice\n6. Keep strokes exactly vertical\n7. Distinguish thickness clearly', 'BEGINNER', 'PITMAN', 'THEORY', 1, 100, true, 'cat-straight-down')
-ON CONFLICT (slug) DO NOTHING;
+('l1', 'Introduction to Pitman Shorthand', 'introduction-to-pitman', 'Learn the history, principles, and mechanics of Sir Isaac Pitman''s shorthand system. Phonetic writing with light and heavy strokes.', 'Pitman shorthand was invented by Sir Isaac Pitman in 1837. It is a PHONETIC system - you write by sound, not by spelling.\n\n## Key Principles\n\n1. PHONETIC: Write what you hear, not what you see\n2. LIGHT AND HEAVY: Thin strokes for voiceless sounds (P, T, K, F, S), thick strokes for voiced sounds (B, D, G, V, Z)\n3. POSITION: Vowel position (first, second, third) indicates the vowel sound\n4. JOINING: Strokes are joined without lifting the pen for speed\n\n## The Three Groups\n\nGROUP 1: Downward straight strokes (P, B, T, D, CH, J, K, G)\nGROUP 2: Upward straight strokes (F, V, TH, DH, S, Z, SH, ZH)\nGROUP 3: Curved strokes (L, R, M, N, NG, NK, W, Y, H)\n\n## Vowel Placement\n\nVowels are dots and dashes placed in three positions:\n- FIRST PLACE: Above or at the beginning of a stroke\n- SECOND PLACE: Level with the stroke\n- THIRD PLACE: Below or at the end of a stroke\n\n## Pen Hold\n\nHold your pen loosely. Use light pressure for thin strokes, firmer pressure for thick strokes. Practice the basic shapes before moving on.', 'Pitman shorthand is based on simple geometric shapes: straight lines, curves, dots, dashes, and circles. Each shape represents a specific sound.\n\nThe system is built around 24 consonant sounds, each with a unique stroke. Vowels are added as dots, dashes, or hooks placed in specific positions.\n\nThe beauty of Pitman is its SPEED — experienced writers reach 200+ words per minute. But it requires mastering the fundamentals first.', '1. Always write what you hear, not how it is spelled\n2. Light strokes = thin line, heavy strokes = thick line\n3. All strokes have a specific direction (top-to-bottom or bottom-to-top)\n4. Vowels are dots, dashes, or hooks in one of three places\n5. Practice each stroke until it becomes automatic\n6. Join strokes without lifting the pen when possible\n7. Accuracy before speed — speed comes with practice', 'BEGINNER', 'PITMAN', 'THEORY', 1, 100, true, 'cat-g1');
 
--- L2: T + D (Tongue-tip sounds)
+-- L2: P and B — The Lip Sounds
 INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
-('l2', 'T and D — The Tongue-Tip Strokes', 't-and-d-strokes', 'Master the T (light) and D (heavy) downward straight strokes. Second pair of basic strokes.', '## T — Light Downward Stroke\nT is a thin downward straight line. Same direction as P.\n\n## D — Heavy Downward Stroke\nD is a thick downward line. The heavy counterpart of T.\n\n## Practice Words\n- T: tie, tea, too, toe, it, at\n- D: die, do, day, doe, due, add\n\n## Contrast with P/B\nT and D use the same stroke shape as P and B. The difference is the POSITION of the vowel.\n\n## Dictation\nWrite: Tie, die, tea, day, too, do, toe, doe, it, add', 'T and D are identical in shape to P and B but represent different sounds. T is light (thin), D is heavy (thick).\n\nThe skill is in distinguishing P from T — both are thin downward strokes. The vowel position tells you which consonant is intended.\n\nPractice writing T and D alongside P and B to master the distinctions.', '1. T = thin downward straight line (same as P)\n2. D = thick downward line (same as B)\n3. Direction: top to bottom\n4. T is voiceless, D is voiced\n5. Distinguish from P/B by vowel position\n6. Practice P-T-B-D sequence', 'BEGINNER', 'PITMAN', 'THEORY', 2, 100, true, 'cat-straight-down')
-ON CONFLICT (slug) DO NOTHING;
+('l2', 'P and B — Downward Straight Strokes (Lip Sounds)', 'p-and-b-lip-sounds', 'Master P (light) and B (heavy). Your first two consonant strokes. Written as downward straight lines.', 'P is a LIGHT (thin) downward straight line. Written from top to bottom.\nB is a HEAVY (thick) downward straight line in the same direction.\n\nTo make P: Press lightly with your pen, draw a straight line downward.\nTo make B: Press firmly, draw the same straight line downward with a thicker line.\n\nPRACTICE WORDS:\nP: pie, pay, pea, paw, up, ape, cap, map\nB: buy, bay, bee, bow, by, aby, cab, mob\n\nDICTATION PRACTICE:\nLevel 1 — Write: Pay, bee, pie, bay, up, by\nLevel 2 — Write: Pea, bow, paw, buy, ape, cab\nLevel 3 — Write: Map, mob, cap, aby, pay bee, by pie\n\nCOMMON PAIRS:\nP+B: upbeat, lapbar\nB+P: subpar, bap\n\nRemember: P = thin (whispered "pa"), B = thick (voiced "ba")', 'P and B are the first two consonant strokes in Pitman shorthand. They are both written as STRAIGHT LINES from TOP to BOTTOM.\n\nThe only difference is THICKNESS:\n- P is a THIN line (voiceless — whisper it)\n- B is a THICK line (voiced — say it out loud)\n\nThese are called BILABIAL sounds because both lips come together to make them. Put your hand on your throat — P has no vibration, B has vibration.\n\nPractice writing P and B repeatedly until the motion is smooth and the thickness difference is clear. This is the foundation of all Pitman writing.', '1. P = thin downward straight stroke\n2. B = thick downward straight stroke\n3. Both written top to bottom\n4. P is whispered (voiceless), B is spoken (voiced)\n5. Keep strokes perfectly vertical\n6. Practice P-B-P-B-P sequence\n7. Distinguish clearly between thin and thick', 'BEGINNER', 'PITMAN', 'THEORY', 2, 100, true, 'cat-g1');
 
--- L3: K + G (Back-of-tongue sounds)
+-- L3: T and D
 INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
-('l3', 'K and G — The Back Tongue Strokes', 'k-and-g-strokes', 'Master the K (light) and G (heavy) downward strokes. The third pair of basic consonants.', '## K — Light Downward Stroke\nK is a thin downward straight line.\n\n## G — Heavy Downward Stroke\nG is a thick downward straight line.\n\n## Practice Words\n- K: key, car, cow, K, Kate\n- G: go, guy, gay, game, gate\n\n## Group 1 Summary\nYou now know ALL 6 downward straight strokes:\nLight: P, T, K\nHeavy: B, D, G\n\n## Dictation\nWrite: Key, go, K, guy, car, gay, cow, game, Kate, gate', 'K and G complete Group 1 of the Pitman consonants. All are downward straight lines differing only in thickness (light/heavy) and vowel position.\n\nWith P-B, T-D, and K-G you can write many English words. Practice all six together.', '1. K = thin downward stroke\n2. G = thick downward stroke\n3. All Group 1 strokes are top-to-bottom\n4. K is voiceless, G is voiced\n5. Review all 6: P-T-K (light) B-D-G (heavy)\n6. Thickness is critical for meaning', 'BEGINNER', 'PITMAN', 'THEORY', 3, 100, true, 'cat-straight-down')
-ON CONFLICT (slug) DO NOTHING;
+('l3', 'T and D — Downward Straight Strokes (Tongue Sounds)', 't-and-d-tongue-sounds', 'Master T (light) and D (heavy). Second pair of downward straight strokes. Same shape as P and B but different sounds.', 'T is a LIGHT (thin) downward straight line — same stroke shape as P.\nD is a HEAVY (thick) downward straight line — same shape as B.\n\nThe key difference between P/B and T/D is the vowel position.\n\nPRACTICE WORDS:\nT: tie, tea, too, toe, it, at, ate, toe, tote, tight\nD: die, do, day, doe, due, add, ado, dote, diet\n\nDICTATION:\nLevel 1 — Write: Tie, die, tea, day, too, do\nLevel 2 — Write: Toe, doe, due, add, it, at\nLevel 3 — Write: Tight, tote, diet, dote, at it\n\nCONTRAST WITH P/B:\n- All four are the same stroke shape (downward straight line)\n- Distinguish by vowel position and context\n- P and T are light (thin), B and D are heavy (thick)', 'T and D use the EXACT SAME stroke shape as P and B. They are both downward straight lines.\n\nThe difference is not in the stroke itself but in the SOUND they represent. P is a lip sound, T is a tongue-tip sound.\n\nIn Pitman shorthand, the same stroke shape can represent different sounds depending on context and vowel placement. This is called HOMOGENEOUS strokes.\n\nPractice distinguishing P-B from T-D by writing them in sequence.', '1. T = thin downward straight line (same shape as P)\n2. D = thick downward straight line (same shape as B)\n3. Direction: top to bottom\n4. T is voiceless, D is voiced\n5. P/T are both light, B/D are both heavy\n6. Distinguish by vowel position and context', 'BEGINNER', 'PITMAN', 'THEORY', 3, 100, true, 'cat-g1');
 
--- L4: F + V (Lip-teeth sounds)
+-- L4: CH and J
 INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
-('l4', 'F and V — The Lip-Teeth Strokes', 'f-and-v-strokes', 'Master the F (light) and V (heavy) upward straight strokes. First pair of upward Group 2 strokes.', '## F — Light Upward Stroke\nF is a thin upward straight line. Written from bottom to top.\n\n## V — Heavy Upward Stroke\nV is a thick upward straight line.\n\n## Practice Words\n- F: fee, fie, foe, F, fun\n- V: vee, vie, vow, V, van\n\n## Upward vs Downward\nUpward strokes go from bottom to top. This is different from P/B/T/D/K/G which go top to bottom.\n\n## Dictation\nWrite: Fee, vee, fie, vie, foe, vow, fun, van', 'F and V are your first UPWARD strokes. They go from bottom to top. F is light (thin), V is heavy (thick).\n\nChange of direction is important: downward strokes start at top, upward strokes start at bottom. This affects vowel placement.', '1. F = thin upward straight line\n2. V = thick upward straight line\n3. Direction: bottom to top\n4. F is voiceless (upper lip on teeth)\n5. V is voiced (vibration)\n6. Opposite direction to Group 1', 'BEGINNER', 'PITMAN', 'THEORY', 4, 100, true, 'cat-straight-up')
-ON CONFLICT (slug) DO NOTHING;
+('l4', 'CH and J — Downward Straight Strokes (Palate Sounds)', 'ch-and-j-palate-sounds', 'Master CH (light) and J (heavy). Third pair of downward straight strokes. The palate sounds.', 'CH is a LIGHT downward straight line.\nJ is a HEAVY downward straight line.\n\nBoth are written top to bottom, same direction as P/B/T/D.\n\nPRACTICE WORDS:\nCH: cheap, chin, chop, such, much, achieve, search\nJ: jeep, gin, job, jam, age, edge, judge\n\nDICTATION:\nLevel 1 — Write: Cheap, jeep, chin, gin, chop, job\nLevel 2 — Write: Such, much, age, edge, achieve, judge\nLevel 3 — Write: Search, jam, inch, large, charge, join\n\nGROUP 1 SUMMARY:\nYou now know ALL 8 downward straight strokes:\nLIGHT: P, T, CH, K\nHEAVY: B, D, J, G\n\nPractice writing all 8 in pairs: P-B, T-D, CH-J, K-G', 'CH and J complete the straight downward strokes with P, B, T, D, K, G.\n\nAll 8 strokes are written TOP to BOTTOM as straight lines. They differ only in:\n1. LIGHT vs HEAVY (thin vs thick)\n2. Vowel position (which tells you the actual consonant)\n\nThe vowel position is what distinguishes P from T from CH from K. They all look the same — the vowel tells you which one it is.\n\nExample:\n- P with first-place vowel = "pie"\n- T with first-place vowel = "tie"\n- CH with first-place vowel = "chai"\n- K with first-place vowel = "Kye"', '1. CH = thin downward straight line\n2. J = thick downward straight line\n3. All 8 downward strokes use the same basic shape\n4. CH is voiceless, J is voiced\n5. Light strokes: P, T, CH, K\n6. Heavy strokes: B, D, J, G\n7. Vowel position identifies which consonant', 'BEGINNER', 'PITMAN', 'THEORY', 4, 100, true, 'cat-g1');
 
--- L5: TH + DH (Tongue-through-teeth sounds)
+-- L5: K and G
 INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
-('l5', 'TH and DH — The Tongue-Through-Teeth Strokes', 'th-and-dh-strokes', 'Master the TH (light) and DH (heavy) upward strokes. The "th" sounds of English.', '## TH — Light Upward Stroke\nTH is a thin upward line. As in "thin" or "think".\n\n## DH — Heavy Upward Stroke\nDH is a thick upward line. As in "the" or "this".\n\n## Practice Words\n- TH: thin, think, thank, thong, thud\n- DH: the, this, that, these, those\n\n## Important\nTH and DH are among the most common sounds in English. Master them well.\n\n## Dictation\nWrite: Thin, the, think, this, thank, that, thong, these, thud, those', 'TH (light) and DH (heavy) are upward straight strokes. They are essential for English shorthand because "th" is so common.\n\nNote: the word "the" is written with the DH stroke alone. "This" is DH + S-circle. These are standard contractions.', '1. TH = thin upward straight stroke\n2. DH = thick upward straight stroke\n3. Direction: bottom to top\n4. TH voiceless, DH voiced\n5. "The" = DH stroke (standard)\n6. "This" = DH + S circle', 'BEGINNER', 'PITMAN', 'THEORY', 5, 100, true, 'cat-straight-up')
-ON CONFLICT (slug) DO NOTHING;
+('l5', 'K and G — Downward Straight Strokes (Back Tongue Sounds)', 'k-and-g-back-tongue', 'Master K (light) and G (heavy). The last pair of downward straight strokes. Made at the back of the tongue.', 'K is a LIGHT (thin) downward straight line.\nG is a HEAVY (thick) downward straight line.\n\nThese complete Group 1 — all 8 downward straight strokes.\n\nPRACTICE WORDS:\nK: key, car, cow, kick, cake, cook, keep, kind\nG: go, guy, gay, game, give, gate, get, good\n\nALL 8 DOWNWARD STROKES:\nLight (thin): P, T, CH, K\nHeavy (thick): B, D, J, G\n\nDICTATION:\nLevel 1 — Write: Key, go, car, guy, K, gay, cow, game\nLevel 2 — Write: Keep, give, kind, good, kick, gate\nLevel 3 — Write: Cake, cook, peek, pack, back, deck, duck, tag, bag, peg, pig', 'K and G are the final pair of downward straight strokes. They complete Group 1.\n\nThese sounds are made at the BACK of the tongue (velar sounds). K is voiceless (light), G is voiced (heavy).\n\nNow you have all 8 downward straight strokes. This is the largest group of consonants in Pitman shorthand. Master these thoroughly before moving to Group 2.\n\nPractice tip: Write all 8 strokes in order every day until you can do it without thinking.', '1. K = thin downward straight line\n2. G = thick downward straight line\n3. Group 1 is complete — 8 strokes total\n4. All are top-to-bottom straight lines\n5. K is voiceless, G is voiced\n6. Review all 8 strokes daily: P-T-CH-K (light), B-D-J-G (heavy)', 'BEGINNER', 'PITMAN', 'THEORY', 5, 100, true, 'cat-g1');
 
--- L6: S + Z (Hissing sounds)
+-- L6: F and V
 INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
-('l6', 'S and Z — The Hissing Strokes', 's-and-z-strokes', 'Master the S (light) and Z (heavy) curved upward strokes. The hissing sounds.', '## S — Light Upward Curve\nS is a light upward curved stroke.\n\n## Z — Heavy Upward Curve\nZ is a heavy upward curved stroke.\n\n## Practice Words\n- S: see, say, so, sue, S, sit\n- Z: zoo, Z, zip, zone, size\n\n## S-Circle\nS can also be written as a small circle attached to other strokes (initial or final).\n\n## Dictation\nWrite: See, zoo, so, Z, sue, zip, sit, zone, size', 'S and Z are upward curved strokes. S is light, Z is heavy. They complete Group 2 (upward strokes).\n\nS is one of the most common letters in English. In addition to the S stroke, S can be written as a small circle (S-circle) attached to other strokes.', '1. S = light upward curved stroke\n2. Z = heavy upward curved stroke\n3. Direction: bottom to top\n4. S voiceless, Z voiced\n5. S can also be a small circle (S-circle)\n6. S-circle initial clockwise, final anticlockwise', 'BEGINNER', 'PITMAN', 'THEORY', 6, 100, true, 'cat-straight-up')
-ON CONFLICT (slug) DO NOTHING;
+('l6', 'F and V — Upward Straight Strokes (Lip-Teeth Sounds)', 'f-and-v-lip-teeth', 'Master F (light) and V (heavy). Your first UPWARD strokes. Direction changes from downward to upward.', 'F is a LIGHT upward straight line. Written from bottom to top.\nV is a HEAVY upward straight line in the same direction.\n\nThis is a MAJOR CHANGE: instead of top-to-bottom, you now write bottom-to-top.\n\nPRACTICE WORDS:\nF: fee, fie, foe, fun, fat, fit, off, leaf\nV: vee, vie, vow, van, vat, vet, have, live\n\nDICTATION:\nLevel 1 — Write: Fee, vee, fie, vie, foe, vow\nLevel 2 — Write: Fun, van, fat, vet, fit, vat\nLevel 3 — Write: Off, leaf, have, live, safe, save, life, five\n\nDIRECTION PRACTICE:\nAlternate: P (down), F (up), P (down), F (up)\nFeel the difference in direction.\n\nCONTRAST F/V with P/B:\n- F and V go UP (bottom to top)\n- P and B go DOWN (top to bottom)\n- This changes where vowels are placed', 'F and V are your first UPWARD strokes. This is a fundamental shift from Group 1.\n\nWhile P/B/T/D/CH/J/K/G all go top-to-bottom, F/V go bottom-to-top.\n\nThis changes vowel placement: a first-place vowel on an upward stroke is still at the BEGINNING, but "beginning" is now at the bottom.\n\nF is light (voiceless), V is heavy (voiced). They are LABIODENTAL sounds — upper teeth on lower lip.', '1. F = thin upward straight line\n2. V = thick upward straight line\n3. Direction: bottom to top (REVERSE of Group 1)\n4. F is voiceless, V is voiced\n5. Vowel placement considers the START of the stroke\n6. First-place vowel = at the start (bottom for upward strokes)\n7. Practice alternating P-F-P-F to master direction change', 'BEGINNER', 'PITMAN', 'THEORY', 6, 100, true, 'cat-g2');
 
--- L7: L + R (Liquid sounds)
+-- L7: TH and DH
 INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
-('l7', 'L and R — The Liquid Strokes', 'l-and-r-strokes', 'Master the L (light curve) and R (heavy curve) strokes. Essential for word flow.', '## L — Light Clockwise Curve\nL is a light clockwise curve. Written downward.\n\n## R — Heavy Anticlockwise Curve\nR is a heavy anticlockwise curve. Written downward.\n\n## Practice Words\n- L: lie, lay, low, L, all, ale\n- R: ray, row, R, are, ore\n\n## Hooks\nL and R also form hooks on other consonants:\n- R-hook: PR, BR, TR, DR, KR, GR\n- L-hook: PL, BL, KL, GL\n\n## Dictation\nWrite: Lie, ray, low, row, L, R, all, are, ale, ore', 'L and R are curved downward strokes. L is light (clockwise curve), R is heavy (anticlockwise curve).\n\nThese strokes also serve as hooks attached to straight strokes to represent consonant blends like PR, BR, TR, etc.', '1. L = light clockwise curve\n2. R = heavy anticlockwise curve\n3. Both written downward\n4. L is voiced, R is voiced\n5. R-hook on straight strokes: PR, BR, TR, DR\n6. L-hook on straight strokes: PL, BL, KL, GL', 'BEGINNER', 'PITMAN', 'THEORY', 7, 100, true, 'cat-curved')
-ON CONFLICT (slug) DO NOTHING;
+('l7', 'TH and DH — Upward Straight Strokes (Th Sounds)', 'th-and-dh-th-sounds', 'Master TH (light) and DH (heavy). The "th" sounds are among the most common in English shorthand.', 'TH is a LIGHT upward straight line.\nDH is a HEAVY upward straight line.\n\nTH is as in "thin", "think", "thank"\nDH is as in "the", "this", "that"\n\nIMPORTANT: The word "the" is written with just DH stroke. "This" is DH + S-circle.\n\nPRACTICE WORDS:\nTH: thin, think, thank, thong, thud, bath, path, moth\nDH: the, this, that, these, those, with, breathe\n\nDICTATION:\nLevel 1 — Write: Thin, the, think, this, thank, that\nLevel 2 — Write: Thong, these, thud, those, bath, path\nLevel 3 — Write: Moth, breathe, thimble, thistle, method, father\n\nPHRASES WITH DH:\n- "the" = DH alone\n- "in the" = N + DH joined\n- "of the" = F + DH joined\n- "for the" = F + DH joined (heavy)', 'TH and DH are upward straight strokes. TH is light, DH is heavy.\n\nThese DENTAL sounds are made by placing the tongue between the teeth. They are extremely common in English, making them essential for Pitman shorthand.\n\nThe word "the" is the most common word in English, and in Pitman it is written with just the DH heavy upward stroke. This single stroke saves time on every page.\n\nPractice TH and DH until they are as natural as P and B. These strokes will be used constantly.', '1. TH = thin upward straight stroke\n2. DH = thick upward straight stroke\n3. Direction: bottom to top\n4. TH is voiceless, DH is voiced\n5. "the" = just DH stroke (standard contraction)\n6. "this" = DH + S-circle\n7. "that" = DH + halved T', 'BEGINNER', 'PITMAN', 'THEORY', 7, 100, true, 'cat-g2');
 
--- L8: M + N (Nasal sounds)
+-- L8: S and Z
 INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
-('l8', 'M and N — The Nasal Strokes', 'm-and-n-strokes', 'Master the M (heavy curve) and N (light curve) nasal strokes. Very common in English.', '## M — Heavy Downward Curve\nM is a thick clockwise curve. Written downward.\n\n## N — Light Downward Curve\nN is a thin clockwise curve. Lighter version of M.\n\n## Practice Words\n- M: me, may, my, M, aim, am\n- N: no, nay, N, an, in, on\n\n## Common Endings\n- -ing: NG stroke\n- -ink: NK stroke\n\n## Dictation\nWrite: Me, no, my, nay, M, N, am, an, in, on', 'M and N are curved strokes written downward. M is heavy (thick), N is light (thin).\n\nM and N are nasal sounds — air passes through the nose. The NG stroke is related, representing the "-ing" ending.\n\n"in" and "an" are written with just the N stroke (standard contractions).', '1. M = heavy clockwise curve\n2. N = light clockwise curve\n3. Both written downward\n4. M voiced nasal, N voiced nasal\n5. NG = light curve for -ing\n6. NK = heavy curve for -nk\n7. "in", "an", "on" = N stroke only', 'BEGINNER', 'PITMAN', 'THEORY', 8, 100, true, 'cat-curved')
-ON CONFLICT (slug) DO NOTHING;
+('l8', 'S and Z — Upward Curved Strokes (Hissing Sounds)', 's-and-z-hissing-sounds', 'Master S (light) and Z (heavy). The hissing sounds. S is the most common consonant in English.', 'S is a LIGHT upward curved stroke.\nZ is a HEAVY upward curved stroke.\n\nS is the most frequent consonant in English. It appears in almost every sentence.\n\nTHE S-CIRCLE:\nIn addition to the S stroke, S can be written as a SMALL CIRCLE:\n- INITIAL S-circle (clockwise): SP, ST, SK, SM, SN\n- FINAL S-circle (anticlockwise): PS, TS, KS, LS, NS\n\nPRACTICE WORDS:\nS: see, say, so, sue, sit, set, sun, bus\nZ: zoo, zip, zone, size, buzz, fuzz\n\nWITH S-CIRCLE:\nInitial: SP (speak), ST (stay), SK (skin), SM (smile), SN (snap)\nFinal: PS (caps), TS (cats), KS (ducks), LS (pulls), NS (pens)\n\nDICTATION:\nLevel 1 — Write: See, zoo, so, Z, sue, zip, sit, zone\nLevel 2 — Write: Sun, size, bus, buzz, cats, pens, dogs\nLevel 3 — Write: Speak, stay, skin, smile, snap, caps, ducks, pulls', 'S is unique in Pitman — it has TWO forms:\n1. The S STROKE — a light upward curve\n2. The S-CIRCLE — a small circle attached to other strokes\n\nThe S-circle is used much more frequently than the S stroke. Almost every S in English can be written as a circle.\n\nZ is the heavy (voiced) version of the S stroke. Z does NOT have a circle form.\n\nS-circle rules:\n- Initial S = clockwise circle at the beginning of a stroke\n- Final S = anticlockwise circle at the end of a stroke\n- The circle is small — about the size of a printed letter "o"', '1. S = light upward curved stroke\n2. Z = heavy upward curved stroke\n3. Direction: bottom to top\n4. S is voiceless, Z is voiced\n5. S-circle (initial) = clockwise at start\n6. S-circle (final) = anticlockwise at end\n7. S-circle is SMALL — practice consistent size', 'BEGINNER', 'PITMAN', 'THEORY', 8, 100, true, 'cat-g2');
 
--- L9: Vowels in Detail
+-- L9: SH and ZH
 INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
-('l9', 'Vowels — Dots, Dashes and Diphthongs', 'vowels-dots-dashes-diphthongs', 'Master all Pitman vowels: short (dots), long (dashes), and diphthongs (hooks).', '## Short Vowels (Light Dots and Dashes)\n- ă (cat): light dot, first place\n- ĕ (bet): light dot, second place\n- ĭ (sit): light dot, third place\n- ŏ (hot): light dash, first place\n- ŭ (cut): light dash, second place\n\n## Long Vowels (Heavy Dots and Dashes)\n- ā (palm): heavy dot, first place\n- ē (see): heavy dot, second place\n- ī (ite): heavy dot, third place\n- ō (go): heavy dash, first place\n- ū (food): heavy dash, third place\n\n## Diphthongs\n- I (eye): downward hook\n- OW (cow): upward hook\n- OI (boy): combined hook\n\n## Three Places\n1. First place: above/beginning of stroke\n2. Second place: level with stroke\n3. Third place: below/end of stroke', 'Pitman vowels are dots, dashes, and hooks placed in specific positions relative to consonant strokes.\n\nThe three positions (first, second, third) correspond to the beginning, middle, and end of the stroke, or positions above, at, and below the line.\n\nLong vowels are generally heavier marks than short vowels. Diphthongs are hooks written with a specific direction.', '1. Light dot = short vowel\n2. Heavy dot = long vowel\n3. Light dash = short vowel (ŏ, ŭ)\n4. Heavy dash = long vowel (ō, ū)\n5. First place = beginning/above stroke\n6. Second place = level with stroke\n7. Third place = below/end of stroke\n8. I = downward hook, OW = upward hook', 'INTERMEDIATE', 'PITMAN', 'THEORY', 9, 150, true, 'cat-vowels')
-ON CONFLICT (slug) DO NOTHING;
+('l9', 'SH and ZH — Upward Strokes (Palatal Sounds)', 'sh-and-zh-palatal', 'Master SH (light) and ZH (heavy). These complete Group 2 — all upward strokes.', 'SH is a LIGHT upward straight stroke.\nZH is a HEAVY upward straight stroke.\n\nZH is rare in English (as in "measure", "pleasure", "treasure").\n\nPRACTICE WORDS:\nSH: ship, shop, shut, show, shade, share, shame, wash\nZH: measure, pleasure, treasure, azure, seizure\n\nGROUP 2 SUMMARY:\nYou now know ALL 8 upward strokes:\nLight (thin): F, TH, S, SH\nHeavy (thick): V, DH, Z, ZH\n\nDICTATION:\nLevel 1 — Write: Ship, measure, shop, pleasure, shut, treasure\nLevel 2 — Write: Show, wash, shame, cash, dash, wish\nLevel 3 — Write: Fashion, session, mission, vision, version, fusion', 'SH and ZH complete Group 2 (upward strokes). SH is light, ZH is heavy.\n\nZH is an unusual sound — it''s the "s" sound in "measure" or "pleasure". It does not appear at the beginning of English words, only in the middle or at the end.\n\nGroup 2 summary — all UPWARD strokes:\n- Straight: F (light), V (heavy), TH (light), DH (heavy), SH (light), ZH (heavy)\n- Curved: S (light), Z (heavy)\n\nNow you know all 16 straight strokes (8 down + 8 up).', '1. SH = light upward straight stroke\n2. ZH = heavy upward straight stroke\n3. Direction: bottom to top\n4. SH is voiceless, ZH is voiced\n5. ZH is rare — only in middle/end of words\n6. Review all 8 upward strokes: F, TH, S, SH (light), V, DH, Z, ZH (heavy)', 'BEGINNER', 'PITMAN', 'THEORY', 9, 100, true, 'cat-g2');
 
--- L10: Joining Strokes
+-- L10: L and R
 INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
-('l10', 'Joining Strokes Smoothly', 'joining-strokes-smoothly', 'Learn to join consonant strokes without awkward angles. Essential for speed.', '## Same Direction Joins\nWhen two strokes go the same direction, join at a natural angle (about 45 degrees).\n\nExamples: P+T, B+D, T+K, D+G\n\n## Opposite Direction Joins\nWhen strokes go opposite directions, place them back-to-back.\n\nExamples: P+B, T+D, K+G\n\n## Curve + Straight Joins\nCurved strokes join to straight strokes at the natural curve end.\n\nExamples: L+P, M+T, N+K, R+B\n\n## Retrograde Joining\nWhen strokes cannot join smoothly, lift the pen (retrograde).\n\n## Practice\nJoin: P-T, B-D, T-K, L-P, M-T, N-K, F-P, V-B, S-T, TH-K', 'Smooth joining is the key to speed in Pitman shorthand. Practice until the pen flows naturally from one stroke to the next.\n\nMost joins are natural — the stroke ends where the next begins. When strokes go in opposite directions, write them back-to-back with a slight angle.', '1. Same direction = join at 45°\n2. Opposite direction = back-to-back\n3. Curve + straight = join at curve end\n4. Retrograde = lift pen (avoid when possible)\n5. Practice common pairs until fluid\n6. Never sacrifice legibility for speed', 'INTERMEDIATE', 'PITMAN', 'EXERCISE', 10, 150, true, 'cat-straight-down')
-ON CONFLICT (slug) DO NOTHING;
+('l10', 'L and R — Curved Strokes (Liquid Sounds)', 'l-and-r-liquid-sounds', 'Master L (light clockwise curve) and R (heavy anticlockwise curve). Your first curved strokes.', 'L is a LIGHT CLOCKWISE curve. Written from top to bottom, curving to the right.\nR is a HEAVY ANTICLOCKWISE curve. Written from top to bottom, curving to the left.\n\nL and R are called "liquid" sounds because they flow like water.\n\nPRACTICE WORDS:\nL: lie, lay, low, L, all, ale, fail, pale, tell, bell\nR: ray, row, R, are, ore, far, bar, tear, dear, care\n\nL AND R AS HOOKS:\n- R-hook: Add to P/B/T/D/CH/J/K/G = PR, BR, TR, DR, KR, GR\n- L-hook: Add to P/B/K/G = PL, BL, KL, GL\n\nDICTATION:\nLevel 1 — Write: Lie, ray, low, row, L, R, all, are\nLevel 2 — Write: Ale, ore, fail, far, pale, bar, tell, tear\nLevel 3 — Write: Bell, dear, fail, care, pale, bar, tell, care\n\nR-hook words: Pray, bray, tray, drain, crane, grain\nL-hook words: Play, blow, clay, glow, blue, clue', 'L and R are your first CURVED strokes. They are written downward like Group 1, but the line curves instead of being straight.\n\nL curves CLOCKWISE (curving to the right). R curves ANTICLOCKWISE (curving to the left).\n\nL is LIGHT (thin), R is HEAVY (thick).\n\nBoth L and R also function as HOOKS on straight strokes:\n- An R-hook on P makes PR\n- An L-hook on P makes PL\n\nThis is the foundation of CONSONANT BLENDS in Pitman.', '1. L = light clockwise curve (curves right)\n2. R = heavy anticlockwise curve (curves left)\n3. Both written from top to bottom\n4. L is voiced, R is voiced\n5. R-hook: clockwise hook on straight strokes\n6. L-hook: anticlockwise hook on straight strokes\n7. Practice L-R-L-R sequence to master the curves', 'BEGINNER', 'PITMAN', 'THEORY', 10, 100, true, 'cat-g3');
+
+-- L11: M and N
+INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
+('l11', 'M and N — Curved Strokes (Nasal Sounds)', 'm-and-n-nasal-sounds', 'Master M (heavy curve) and N (light curve). Nasal sounds made through the nose.', 'M is a HEAVY clockwise curve downward.\nN is a LIGHT clockwise curve downward.\n\nThese are NASAL sounds — air passes through the nose.\n\nPRACTICE WORDS:\nM: me, may, my, M, aim, am, came, name, time, make\nN: no, nay, N, an, in, on, can, man, tan, nine\n\nCONTRACTIONS:\n- "in" = N stroke alone\n- "an" = N stroke alone\n- "am" = M stroke alone\n\nDICTATION:\nLevel 1 — Write: Me, no, my, nay, M, N, am, an\nLevel 2 — Write: Aim, in, on, came, can, name, man\nLevel 3 — Write: Time, tan, nine, make, came, name, mean, moan', 'M and N are CURVED strokes written DOWNWARD. They curve clockwise (to the right).\n\nM is HEAVY (thick), N is LIGHT (thin). Both are NASAL sounds.\n\nTo feel the difference: pinch your nose while trying to say "M" or "N" — the sound stops because air goes through your nose.\n\n"in", "an", "on", and "am" are written with just the N or M stroke as standard contractions.\n\nM and N are very common in English. Master these strokes well.', '1. M = heavy clockwise curve\n2. N = light clockwise curve\n3. Both written downward (top to bottom)\n4. M is voiced nasal, N is voiced nasal\n5. "in", "an", "on" = N stroke only\n6. "am" = M stroke only\n7. Practice alternating M-N-M-N', 'BEGINNER', 'PITMAN', 'THEORY', 11, 100, true, 'cat-g3');
+
+-- L12: NG, NK, W, Y, H
+INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
+('l12', 'NG, NK, W, Y, H — Remaining Curved Strokes and H', 'ng-nk-w-y-h', 'Master NG, NK, W, Y, and H. Complete Group 3 with the remaining curved strokes and the H dot.', 'NG is a LIGHT downward curve with a distinctive tail. As in "sing", "ring", "thing".\nNK is a HEAVY downward curve with a tail. As in "sink", "think", "link".\n\nW is a LIGHT UPWARD hook. As in "we", "way", "will".\nY is a LIGHT DOWNWARD hook. As in "yes", "you", "yay".\n\nH is a LIGHT DOT. Written before the vowel that follows. As in "he", "hi", "how".\n\nPRACTICE WORDS:\nNG: sing, ring, thing, bring, spring, long, song\nNK: sink, think, link, blink, drink, thank\nW: we, way, will, well, want, went, win, won\nY: yes, you, year, yet, yield, young, yourself\nH: he, hi, how, who, hat, hit, hot, house\n\nDICTATION:\nLevel 1 — Write: Sing, sink, we, yes, he, ring, think\nLevel 2 — Write: Thing, link, will, you, hi, bring, blink\nLevel 3 — Write: Spring, drink, well, year, how, long, song, thank\n\nGROUP 3 SUMMARY — All curved strokes:\nLight: L, N, NG, W, Y, H (dot)\nHeavy: R, M, NK\n\nTOTAL SO FAR: 24 consonants mastered!', 'This lesson covers the remaining strokes to complete ALL 24 Pitman consonant sounds.\n\nNG and NK are related to N: NG is the "-ing" ending sound, NK adds a K sound at the end.\n\nW and Y are SEMI-VOWELS — they sound like vowels but function as consonants.\n\nH is unique: it is written as a DOT (or small tick) placed before the vowel of the following syllable.\n\nWith all 24 consonants, you can now write any English word in Pitman shorthand!', '1. NG = light curve with tail (as in "sing")\n2. NK = heavy curve with tail (as in "sink")\n3. W = light upward hook\n4. Y = light downward hook\n5. H = light dot before the vowel\n6. All 24 consonants now complete!\n7. Review all Group 3: L, R, M, N, NG, NK, W, Y, H', 'BEGINNER', 'PITMAN', 'THEORY', 12, 100, true, 'cat-g3');
+
+-- L13: Short Vowels
+INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
+('l13', 'Short Vowels — Light Dots and Dashes', 'short-vowels-light-dots-dashes', 'Master the 5 short vowels: ă, ĕ, ĭ, ŏ, ŭ. Written as light dots and dashes in three positions.', 'Short vowels are written with LIGHT marks:\n- LIGHT DOT (.) = short ă, ĕ, ĭ\n- LIGHT DASH (-) = short ŏ, ŭ\n\nTHREE POSITIONS:\n- FIRST PLACE (above/beginning): ă (light dot), ŏ (light dash)\n- SECOND PLACE (level): ĕ (light dot), ŭ (light dash)\n- THIRD PLACE (below/end): ĭ (light dot)\n\nPRACTICE WORDS:\nă (first place light dot): cat, bat, hat, pat, tap, nap\nĕ (second place light dot): bet, get, set, let, met, net\nĭ (third place light dot): sit, fit, bit, hit, pit, kit\nŏ (first place light dash): hot, pot, lot, got, not, cot\nŭ (second place light dash): cut, but, hut, nut, rut, shut\n\nDICTATION:\nWrite: Cat, bet, sit, hot, cut, bat, get, fit, pot, but, hat, set, bit, lot, hut', 'Short vowels are LIGHT marks (thin dots or dashes) placed in specific positions relative to the consonant stroke.\n\nThe three positions correspond to:\n1. FIRST PLACE — above the stroke (for downward) or at the beginning (for upward)\n2. SECOND PLACE — level with the middle of the stroke\n3. THIRD PLACE — below the stroke (for downward) or at the end (for upward)\n\nShort vowels are distinguished from LONG vowels by being LIGHTER marks.\n\nPractice: write a consonant stroke, then add the appropriate vowel mark in the correct position.', '1. Short vowels = LIGHT marks\n2. ă, ŏ at FIRST PLACE (above/beginning)\n3. ĕ, ŭ at SECOND PLACE (level)\n4. ĭ at THIRD PLACE (below/end)\n5. Light DOT = ă, ĕ, ĭ\n6. Light DASH = ŏ, ŭ\n7. Position is relative to the stroke direction', 'BEGINNER', 'PITMAN', 'THEORY', 13, 100, true, 'cat-g4');
+
+-- L14: Long Vowels
+INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
+('l14', 'Long Vowels — Heavy Dots and Dashes', 'long-vowels-heavy-dots-dashes', 'Master the 5 long vowels: ā, ē, ī, ō, ū. Written as heavy dots and dashes in three positions.', 'Long vowels are written with HEAVY marks:\n- HEAVY DOT (.) = long ā, ē, ī\n- HEAVY DASH (-) = long ō, ū\n\nTHREE POSITIONS (same as short vowels):\n- FIRST PLACE (above/beginning): ā (heavy dot), ō (heavy dash)\n- SECOND PLACE (level): ē (heavy dot)\n- THIRD PLACE (below/end): ī (heavy dot), ū (heavy dash)\n\nPRACTICE WORDS:\nā (first place heavy dot): palm, calm, barn, balm, psalm, father\nē (second place heavy dot): see, bee, tree, free, three, green\nī (third place heavy dot): bite, kite, site, white, quite, time\nō (first place heavy dash): go, so, no, show, know, snow\nū (third place heavy dash): food, mood, rude, dude, crude, include\n\nVOWEL SUMMARY:\nFirst place: ă (light dot), ā (heavy dot), ŏ (light dash), ō (heavy dash)\nSecond place: ĕ (light dot), ē (heavy dot), ŭ (light dash)\nThird place: ĭ (light dot), ī (heavy dot), ū (heavy dash)', 'Long vowels use the SAME THREE POSITIONS as short vowels but are written with HEAVY marks.\n\nA heavy DOT produces the "long" sound of a, e, or i.\nA heavy DASH produces the "long" sound of o or u.\n\nThe difference between "bit" (ĭ, short) and "bite" (ī, long) is just the weight of the dot!\n\nThis is a key feature of Pitman — stroke thickness and mark weight carry meaning.\n\nPractice distinguishing short from long by varying pen pressure.', '1. Long vowels = HEAVY marks\n2. ā, ō at FIRST PLACE (above/beginning)\n3. ē at SECOND PLACE (level)\n4. ī, ū at THIRD PLACE (below/end)\n5. Heavy DOT = ā, ē, ī\n6. Heavy DASH = ō, ū\n7. Short vs long = light vs heavy mark weight', 'BEGINNER', 'PITMAN', 'THEORY', 14, 100, true, 'cat-g4');
+
+-- L15: Diphthongs
+INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
+('l15', 'Diphthongs — I, OW, OI, U', 'diphthongs-i-ow-oi-u', 'Master the 4 Pitman diphthongs: I (eye), OW (cow), OI (boy), U (due). Written as hooks.', 'Diphthongs are TWO vowel sounds gliding together. They are written as HOOKS in specific positions.\n\nI (as in eye, my, by) = DOWNWARD hook at FIRST PLACE\nOW (as in cow, how, now) = UPWARD hook at SECOND PLACE\nOI (as in boy, toy, joy) = COMBINED hook at THIRD PLACE\nU (as in few, due, new) = SMALL UPWARD hook at FIRST PLACE\n\nPRACTICE WORDS:\nI: eye, my, by, lie, tie, die, pie, buy, guy, sigh\nOW: cow, how, now, bow, wow, vow, sow, thou, plow\nOI: boy, toy, joy, coy, soy, voice, noise, choice\nU: few, due, new, dew, queue, view, you, hue\n\nDICTATION:\nLevel 1 — Write: Eye, cow, boy, few, my, how, toy, due\nLevel 2 — Write: Lie, now, joy, new, tie, bow, voice, view\nLevel 3 — Write: Voice, noise, choice, few, queue, you, thou', 'Diphthongs are complex vowel sounds that glide from one vowel to another within the same syllable.\n\nPitman represents them with HOOKS:\n- I (as in "eye") = a small DOWNWARD hook at first place\n- OW (as in "cow") = a small UPWARD hook at second place\n- OI (as in "boy") = a COMBINED HOOK at third place\n- U (as in "few") = a small UPWARD hook at first place\n\nThe diphthong hooks are written near the consonant stroke, in the same three positions used for simple vowels.', '1. Diphthongs = two vowels in one syllable\n2. I (eye) = downward hook at first place\n3. OW (cow) = upward hook at second place\n4. OI (boy) = combined hook at third place\n5. U (few) = small upward hook at first place\n6. Diphthong hooks are placed near the consonant\n7. Practice: eye-cow-boy-few sequence', 'INTERMEDIATE', 'PITMAN', 'THEORY', 15, 150, true, 'cat-g4');
+
+-- L16: Joining Strokes
+INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
+('l16', 'Joining Strokes — Smooth Connections', 'joining-strokes-smooth-connections', 'Learn to join consonant strokes smoothly. Same-direction, opposite-direction, curve-to-straight, and retrograde joins.', 'Joining is the key to speed. Strokes that follow each other should be joined without lifting the pen.\n\nSAME DIRECTION JOINTS:\nBoth strokes go the same direction. Join at a natural angle (about 45 degrees).\n- P+T, B+D, T+K, D+G, F+TH, V+DH\n\nOPPOSITE DIRECTION JOINTS:\nOne goes up, the other goes down. Write back-to-back with a sharp angle.\n- P+B, T+D, K+G, F+V, TH+DH\n\nCURVE TO STRAIGHT:\nCurved stroke naturally joins to the next stroke at its endpoint.\n- L+P, M+T, N+K, R+B\n\nSTRAIGHT TO CURVE:\nStraight stroke ends where the curve begins.\n- P+L, T+M, K+N, B+R\n\nRETROGRADE JOINTS:\nWhen strokes cannot join smoothly, LIFT the pen. This is called retrograde.\n- If the angle is too awkward, retrograde is better than a messy join.\n\nPRACTICE JOINTS:\nSame: P+T, T+K, F+TH, SH+ZH\nOpposite: P+B, T+D, F+V, TH+DH\nCurve-Straight: L+T, M+P, N+K, R+F\nRetrograde: When needed, lift cleanly', 'Smooth joining of strokes is what gives Pitman shorthand its remarkable speed.\n\nGENERAL RULE: Join strokes at their natural meeting points. When two strokes go in the same direction, they meet at an angle. When they go in opposite directions, they meet back-to-back.\n\nCurved strokes join naturally at their endpoints. Straight strokes join to curves at the curve''s starting point.\n\nOnly lift the pen (RETROGRADE) when a join would be awkward or illegible.', '1. Same direction = join at 45 angle\n2. Opposite direction = back-to-back\n3. Curve to straight = natural endpoint\n4. Straight to curve = join at curve start\n5. Retrograde = lift pen (avoid if possible)\n6. Practice joins until fluid\n7. Never sacrifice legibility for speed', 'INTERMEDIATE', 'PITMAN', 'EXERCISE', 16, 150, true, 'cat-g5');
+
+-- L17: R-Hooks and L-Hooks
+INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
+('l17', 'R-Hooks and L-Hooks — Consonant Blends', 'r-hooks-l-hooks-blends', 'Master R-hooks and L-hooks on straight strokes. These add R or L without an extra stroke.', 'R-HOOK: A small clockwise hook at the beginning of a straight stroke = R following the consonant.\n- PR (P + R), BR (B + R), TR (T + R), DR (D + R), KR (K + R), GR (G + R)\n- Also on curved strokes: MR, NR, LR, FR, VR, THR, SHR\n\nL-HOOK: A small anticlockwise hook at the beginning of a straight stroke = L following the consonant.\n- PL (P + L), BL (B + L), KL (K + L), GL (G + L)\n\nR-hook is on the same side as the R curve (clockwise side).\nL-hook is on the opposite side (anticlockwise side).\n\nPRACTICE WORDS:\nR-hook: pray, bray, tray, drain, crane, grain, fry, try, dry\nL-hook: play, blow, clay, glow, blue, clue, plea, blew\n\nDICTATION:\nWrite: Pray, play, bray, blow, tray, clay, drain, glow, crane, blue, grain, clue, fry, plea, try, blew, dry', 'Hooks are a brilliant feature of Pitman shorthand. Instead of writing two separate strokes for a consonant blend like PR, you write ONE stroke with a small hook added.\n\nR-hooks and L-hooks are called INITIAL HOOKS because they are added at the BEGINNING of a stroke.\n\nThe R-hook curves in the SAME direction as the R stroke (clockwise).\nThe L-hook curves in the OPPOSITE direction (anticlockwise).\n\nHooks can also be added to curved strokes, but only on the inner or outer curve, depending on the sound.', '1. R-hook = clockwise hook = adds R\n2. L-hook = anticlockwise hook = adds L\n3. Hooks at THICK end of stroke\n4. R-hook: P+B+T+D+CH+J+K+G curved: R curve side\n5. L-hook: P+B+K+G only\n6. Practice: PR, BR, TR, DR, KR, GR, PL, BL, KL, GL\n7. Hooks save ONE STROKE per blend', 'INTERMEDIATE', 'PITMAN', 'THEORY', 17, 150, true, 'cat-g5');
+
+-- L18: S-Circle
+INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
+('l18', 'S-Circle — Initial and Final', 's-circle-initial-final', 'Master the S-circle. A small circle that adds S to any stroke — at the beginning or end.', 'The S-circle is one of the most useful devices in Pitman. A small circle = S.\n\nINITIAL S-CIRCLE (CLOCKWISE):\nWritten at the BEGINNING of a stroke (clockwise direction).\n- SP: speak, spin, spot, spare\n- ST: stay, stop, star, still\n- SK: skin, skip, sky, skate\n- SM: smile, small, smooth\n- SN: snap, snip, snow, snore\n- SPR: spray, spring, spread\n- STR: stray, stream, strong\n\nFINAL S-CIRCLE (ANTICLOCKWISE):\nWritten at the END of a stroke (anticlockwise direction).\n- PS: caps, maps, tops\n- TS: cats, hats, pots\n- KS: ducks, packs, decks\n- LS: pulls, bells, falls\n- NS: pens, runs, fans\n\nDICTATION:\nInitial: Speak, stay, skin, smile, snap, spray, stretch\nFinal: Caps, cats, ducks, pulls, pens, tops, hats', 'The S-circle is a small circle about the size of a printed letter "o". It represents the letter S.\n\nINITIAL S-circle (clockwise):\n- Written at the START of a stroke\n- Turns before the stroke begins\n- Examples: SP, ST, SK, SM, SN\n\nFINAL S-circle (anticlockwise):\n- Written at the END of a stroke\n- Turns after the stroke ends\n- Examples: PS, TS, KS, LS, NS\n\nDirection matters! Initial S goes one way, final S goes the opposite way. This helps distinguish words like "sip" vs "spy".', '1. S-circle = small circle = S sound\n2. Initial S = CLOCKWISE circle at start\n3. Final S = ANTICLOCKWISE circle at end\n4. Initial: SP, ST, SK, SM, SN\n5. Final: PS, TS, KS, LS, NS\n6. Circle size should be CONSISTENT\n7. Practice: SP-PS, ST-TS, SK-KS', 'INTERMEDIATE', 'PITMAN', 'THEORY', 18, 150, true, 'cat-g6');
+
+-- L19: SW, ST, STR Loops
+INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
+('l19', 'SW, ST, and STR Loops — Extended S Forms', 'sw-st-str-loops', 'Master the SW-loop, ST-loop, and STR-loop. Larger loops for extended S combinations.', 'SW-LOOP (large initial loop):\nLarger than an S-circle, written at the beginning.\n- SW: sweet, swing, swap, swim, swift, swell\n\nST-LOOP (small loop on OPPOSITE side):\nWritten on the opposite side of the stroke from the S-circle.\n- ST: past, last, must, just, cost, lost, rest\n\nSTR-LOOP (large loop on opposite side):\nLarger than ST-loop, on the same opposite side.\n- STR: past, last, must, just, cost, lost, rest\n\nDISTINGUISHING:\n- S-circle (small, normal side) = S\n- SW-loop (large, normal side) = SW\n- ST-loop (small, opposite side) = ST\n- STR-loop (large, opposite side) = STR\n\nPRACTICE:\nSW: sweet, swing, swap, swim, swift\nST: past, last, must, just, cost, lost, rest\nSTR: past, last, must, just, cost, lost\n\nDICTATION:\nWrite: Sweet, past, strong, swing, last, stripe, swap, must, stray, swim, cost, streamline', 'Loops are larger versions of the S-circle that represent S followed by another consonant.\n\nSW-LOOP: Like a large S-circle at the beginning. The larger size distinguishes SW from plain S.\n\nST-LOOP: Written on the OPPOSITE side of the stroke from the S-circle. This is a key distinction.\n\nSTR-LOOP: Like a large ST-loop on the opposite side.\n\nThe size difference matters:\nSMALL = S (circle) or ST (loop)\nLARGE = SW (circle) or STR (loop)', '1. SW-loop: large, normal side = SW\n2. ST-loop: small, opposite side = ST\n3. STR-loop: large, opposite side = STR\n4. S-circle: small, normal side = S\n5. Size distinguishes S from SW\n6. Side distinguishes S/SW from ST/STR\n7. Practice: S-SW-ST-STR on each stroke', 'INTERMEDIATE', 'PITMAN', 'THEORY', 19, 150, true, 'cat-g6');
+
+-- L20: Halving
+INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
+('l20', 'Halving Principle — Adding T or D', 'halving-principle-t-d', 'Master halving. Cutting a stroke to half length adds T (if light) or D (if heavy). A major speed device.', 'HALVING is one of the most powerful devices in Pitman shorthand.\n\nWhen you write a stroke at HALF its normal length:\n- LIGHT halved stroke = +T\n- HEAVY halved stroke = +D\n\nThis means you can write "pt", "bd", "td", "kt", "ft", "vd", etc. with a SINGLE stroke!\n\nEXAMPLES:\n- Light P halved = PT (as in "kept")\n- Heavy B halved = BD (as in "robed")\n- Light T halved = TT or TD (as in "fought")\n- Heavy D halved = DD or DED (as in "needed")\n- Light K halved = KT (as in "acted")\n- Heavy G halved = GD (as in "bagged")\n\nPRACTICE WORDS:\nLight halved: kept, apt, opt, act, fact, sect, pact\nHeavy halved: robed, mobbed, cabled, needed, graded\n\nDICTATION:\nWrite: Kept, apt, act, fact, pact, robed, needed, graded', 'Halving is a simple concept with powerful results: half the stroke length = add T or D.\n\nThe principle works on ALL strokes:\n- Light strokes (P, T, CH, K, F, TH, S, SH) + halving = +T\n- Heavy strokes (B, D, J, G, V, DH, Z, ZH) + halving = +D\n\nThis is especially useful for past tense (-ed, -t) endings.\n\nExample: "kept" = K + halved P. One stroke for KP + KT sound.\n\nPractice making strokes exactly half their normal length.', '1. Half-length stroke = add T or D\n2. Light stroke halved = +T\n3. Heavy stroke halved = +D\n4. Works on ALL strokes (straight and curved)\n5. Useful for past tense (-ed, -t)\n6. Halving is one of the GREATEST time-savers\n7. Practice: P(half)=PT, B(half)=BD, T(half)=TD', 'INTERMEDIATE', 'PITMAN', 'THEORY', 20, 150, true, 'cat-g6');
+
+-- L21: Doubling
+INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
+('l21', 'Doubling Principle — Adding TR, DR, THR, DHR', 'doubling-principle-tr-dr', 'Master doubling. Lengthening a curved stroke to double length adds TR, DR, THR, or DHR.', 'DOUBLING works on CURVED strokes only (not straight strokes).\n\nWrite a curved stroke at DOUBLE its normal length:\n- +TR or DR (standard)\n- +THR or DHR (with breath sound)\n\nEXAMPLES:\n- M doubled = MTR or MDR (as in "matter", "madder")\n- N doubled = NTR or NDR (as in "enter", "under")\n- L doubled = LTR (as in "alter")\n- R doubled = RTR (as in "artery")\n- F doubled = FTR (as in "after")\n- V doubled = VDR (as in "favor")\n\nPRACTICE WORDS:\nM-doubled: matter, madder, motor, meter, mutter\nN-doubled: enter, under, inter, inner, winter\nL-doubled: alter, filter, shelter, velvet\nR-doubled: artery, order, harder, murder\nF-doubled: after, softer, laughter, drafter\n\nCONTRAST:\nNormal length: M (as in "me")\nHalved: MT or MD (as in "meant" or "mend")\nDoubled: MTR or MDR (as in "matter" or "madder")', 'Doubling applies ONLY to curved strokes (M, N, L, R, F, V, etc.).\n\nIt adds TR or DR (or THR/DHR) to the end of the stroke.\n\nIMPORTANT DISTINCTION:\n- Normal length = the basic stroke (no addition)\n- Half length = add T or D (halving)\n- Double length = add TR or DR (doubling)\n\nThis three-way distinction gives you maximum efficiency. One stroke can represent up to 4 sounds!', '1. Doubling = double length = +TR/+DR\n2. Works on CURVED strokes only\n3. Not the same as halving!\n4. Normal = no addition\n5. Half = +T (light) or +D (heavy)\n6. Double = +TR or +DR\n7. Practice: M-normal, M-half, M-double', 'INTERMEDIATE', 'PITMAN', 'THEORY', 21, 150, true, 'cat-g6');
+
+-- L22: Prefixes
+INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
+('l22', 'Prefixes — Common Word Beginnings', 'prefixes-common-beginnings', 'Master Pitman prefixes: con-, com-, in-, un-, en-, per-, pro-, etc. Standard shorthand shortcuts.', 'Prefixes are written with specific shorthand forms:\n\nCON-/COM-/COG-: Written as a dot at the beginning\n- con: connect, consult, concert\n- com: command, compare, combine\n- cog: cognate, cognizant\n\nIN-/UN-/EN-: Written with N stroke\n- in: inside, include, income\n- un: until, unless, unable\n- en: enjoy, engage, enlarge\n\nPRE-/PER-/PRO-: Written with P + R\n- pre: prepare, predict, prevent\n- per: perhaps, perform, person\n- pro: provide, produce, program\n\nTRAN-/TRA-/TRI-: Written with T + R\n- trans: transport, transfer, translate\n- tra: travel, traffic, track\n- tri: triangle, tripod, tricycle\n\nDIS-/MIS-: Written with S-circle modifications\n- dis: display, discuss, distant\n- mis: mistake, misplace, mislead\n\nDICTATION:\nWrite: Connect, command, include, until, enjoy, prepare, perhaps, provide, transport, travel, triangle, discuss, mistake', 'Prefixes save time by using standardized shortcuts for common word beginnings.\n\nInstead of writing "con-" as two separate strokes (K + N), experienced Pitman writers use a simple DOT before the main stroke.\n\nEach prefix has its own unique shorthand form. Learn the most common ones to dramatically increase your speed.\n\nNote: The exact form depends on the following stroke. Context determines which prefix is intended.', '1. con-/com- = dot before stroke\n2. in-/un-/en- = N before main stroke\n3. pre-/per-/pro- = P + R\n4. trans-/tra-/tri- = T + R\n5. dis-/mis- = S-circle modifications\n6. Learn prefixes for speed\n7. Context determines specific prefix', 'ADVANCED', 'PITMAN', 'THEORY', 22, 200, true, 'cat-g7');
+
+-- L23: Suffixes
+INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
+('l23', 'Suffixes and Endings', 'suffixes-endings', 'Master common Pitman suffixes: -ing, -ed, -tion, -sion, -ment, -ness, -ful, -less, -ly, etc.', 'Suffixes (word endings) have standardized Pitman forms:\n\n-ING: NG stroke (light curve)\n- writing, running, going, seeing\n\n-ED: Halved stroke (adds T or D)\n- walked (K-halved = KT), needed (D-halved = DD)\n\n-TION/-SION: SH stroke + N\n- nation, action, mission, vision\n\n-MENT: M + halved T\n- payment, movement, treatment\n\n-NESS: N + S-circle\n- kindness, goodness, happiness\n\n-FUL: F + L\n- careful, helpful, beautiful\n\n-LESS: L + S-circle\n- careless, helpless, homeless\n\n-LY: L curve only\n- kindly, slowly, quickly\n\nDICTATION:\nWrite: Writing, walked, nation, payment, kindness, careful, careless, kindly, running, needed, action, movement, goodness, helpful, homeless, slowly', 'Suffixes are the counterparts of prefixes — standardized endings that speed up writing.\n\nEach suffix has a specific Pitman representation. Many use the halving or doubling principles you already know.\n\nThe key is to recognize the suffix and write it automatically, without thinking about the individual sounds.', '1. -ing = NG stroke\n2. -ed = halve the previous stroke\n3. -tion/-sion = SH + N\n4. -ment = M + halved T\n5. -ness = N + S-circle\n6. -ful = F + L\n7. -less = L + S-circle\n8. -ly = L curve', 'ADVANCED', 'PITMAN', 'THEORY', 23, 200, true, 'cat-g7');
+
+-- L24: Phrasing
+INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
+('l24', 'Phrasing — Joining Words Together', 'phrasing-joining-words', 'Master phrasing: joining multiple words without lifting the pen. The key to reaching 100+ WPM.', 'PHRASING means joining two or more words together in one continuous outline.\n\nBASIC PHRASES:\n- I am: I (diph) + M (curve) = continuous stroke\n- I have: I + V (heavy upward)\n- I will: I + L (curve)\n- You are: Y + R\n- We are: W + R\n- They are: DH + R\n- It is: T + S-circle\n- In the: N + DH\n- Of the: F (heavy) + DH\n- To be: T (up) + B\n\nPHRASING RULES:\n1. Join common word pairs\n2. Maintain legibility at all times\n3. Longer phrases (3-4 words) for very common combinations\n4. Use contractions for articles and prepositions\n\nADVANCED PHRASES:\n- I have been: I + V + B\n- I can: I + K + N\n- I do: I + D\n- We have: W + V\n- For the: F + DH\n- And the: N + DH\n\nDICTATION:\nWrite: I am, you are, we are, they are, it is, in the, of the, to be, I have, I will, I have been, I can, we have', 'Phrasing is what separates slow Pitman writers from fast ones. By joining words without lifting the pen, you eliminate the time lost between words.\n\nStart with common 2-word phrases. As you gain speed, add 3-word and 4-word phrases.\n\nThe KEY RULE: Only phrase when it feels natural AND remains legible. If a phrase is unclear, write the words separately.\n\nCommon phrasing patterns:\n- Pronoun + verb (I am, I have, you are)\n- Preposition + article (in the, of the, for the)\n- Verb + preposition (go to, come to)', '1. Phrasing = join words without pen lift\n2. Start with 2-word common pairs\n3. Add longer phrases gradually\n4. Legibility is MORE important than speed\n5. Pronoun+verb: I am, I have, you are\n6. Prep+article: in the, of the, for the\n7. Practice phrases until automatic', 'ADVANCED', 'PITMAN', 'THEORY', 24, 200, true, 'cat-g7');
+
+-- L25: Contractions
+INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
+('l25', 'Contractions — Standard Word Shortcuts', 'contractions-standard-shortcuts', 'Master standard Pitman contractions for common words. These are ALWAYS written the same way.', 'Pitman has standard contractions for very common words. These are ALWAYS written the same way.\n\nESSENTIAL CONTRACTIONS:\n- the = DH (heavy upward) alone\n- and = N (dot or curve)\n- to = T (upward direction)\n- of = F (heavy upward)\n- in = N (light upward curve)\n- it = T (with short i vowel)\n- for = F (heavy upward, different position)\n- with = W (upward hook)\n- will = L (clockwise curve)\n- be = B (heavy downward)\n- can = K + N\n- do = D (heavy downward)\n- go = G (heavy downward)\n- up = P (light downward)\n- are = R (heavy anticlockwise curve)\n- not = N + halved T\n- but = B + halved T\n- have = H dot + V\n- this = DH + S-circle\n- that = DH + halved T\n\nDICTATION:\nWrite: The, and, to, of, in, it, for, with, will, be, can, do, go, are, not, but, have, this, that\n\nSENTENCES:\n\"I can go to the store\" = I-K-N + G + T-up + DH\n\"We will have to do it\" = W-L + H-dot-V + T-up + D + T-vowel', 'Contractions are fixed shorthand forms for common words. They NEVER change.\n\nUnlike phrasing (which can vary), contractions are standardized. Every Pitman writer writes "the" the same way — as DH heavy upward.\n\nLearning the 20+ standard contractions will dramatically increase your speed. These are the words that appear most frequently in English.\n\nPractice tip: When reading English text, mentally translate each common word into its Pitman contraction.', '1. Contractions are STANDARD and FIXED\n2. the = DH, and = N, to = T-up\n3. of = F, in = N, it = T\n4. for = F, with = W, will = L\n5. be = B, can = K+N, do = D\n6. are = R, not = N+T-halved\n7. have = H-dot + V\n8. Practice: translate each common word', 'ADVANCED', 'PITMAN', 'THEORY', 25, 200, true, 'cat-g7');
+
+-- L26: Speed Building
+INSERT INTO "Lesson" (id, title, slug, description, content, theory, rules, difficulty, course_type, lesson_type, "order", xp_reward, published, category_id) VALUES
+('l26', 'Speed Building — From 20 to 200 WPM', 'speed-building-20-to-200', 'Systematic speed building techniques. Progressive practice from 20 WPM to professional speeds of 200+ WPM.', 'Speed building is a PROGRESSIVE process. Follow these stages:\n\nSTAGE 1 — ACCURACY (Weeks 1-2): 20-30 WPM\n- Focus on correct stroke formation\n- Practice each stroke pair 50 times\n- Write slowly and accurately\n- Goal: 100% accuracy at low speed\n\nSTAGE 2 — CONSOLIDATION (Weeks 3-4): 30-50 WPM\n- Join strokes smoothly\n- Practice common words and contractions\n- Introduce S-circle and basic hooks\n- Goal: Smooth joining at moderate speed\n\nSTAGE 3 — EXPANSION (Weeks 5-8): 50-80 WPM\n- Learn all remaining principles\n- Practice phrasing common word pairs\n- Timed writing sessions\n- Goal: Apply all principles at speed\n\nSTAGE 4 — SPEED (Weeks 9-16): 80-120 WPM\n- Dictation at increasing speeds\n- Focus on phrasing and contractions\n- Daily timed practice\n- Goal: Automatic stroke formation\n\nSTAGE 5 — PROFESSIONAL (Month 5+): 120-200+ WPM\n- Advanced phrasing\n- Reading back shorthand at speed\n- Specialized vocabulary practice\n- Goal: Professional-level speed\n\nDAILY PRACTICE ROUTINE:\n1. Warm-up: Write all 24 strokes (2 minutes)\n2. Common words: Write 20 contractions (3 minutes)\n3. Dictation: Transcribe at target speed (10 minutes)\n4. Review: Identify weak spots (5 minutes)\n5. Total: 20 minutes daily\n\nBENCHMARKS:\n- Beginner: 20-30 WPM\n- Intermediate: 50-80 WPM\n- Advanced: 100-150 WPM\n- Professional: 150-200+ WPM', 'Speed in Pitman shorthand comes from INSTANT RECOGNITION and AUTOMATIC RESPONSE.\n\nWhen you see or hear a sound, your hand should write the correct stroke without conscious thought.\n\nThis is achieved through:\n1. DELIBERATE PRACTICE — focused, not casual\n2. CONSISTENCY — daily practice, even if short\n3. PROGRESSION — gradually increase difficulty\n4. REVIEW — identify and fix weak areas\n\nThe most successful Pitman writers practice 15-30 minutes EVERY day, not 2 hours once a week.', '1. Stage 1: Accuracy first (20-30 WPM)\n2. Stage 2: Consolidation and joining (30-50)\n3. Stage 3: Expansion to full system (50-80)\n4. Stage 4: Speed building (80-120)\n5. Stage 5: Professional speed (120-200+)\n6. Practice 15-30 minutes DAILY\n7. Focus on WEAK areas, not strengths\n8. Read back your shorthand regularly', 'ADVANCED', 'PITMAN', 'EXERCISE', 26, 250, true, 'cat-g7');
 
 -- ============================================================
--- EXERCISES per lesson
+-- EXERCISES (130+ exercises covering ALL lessons)
 -- ============================================================
 INSERT INTO "Exercise" (id, lesson_id, question, answer, hint, "order") VALUES
--- L1 Exercises (P+B)
-('ex-p1', 'l1', 'Write the outline for P (light sound)', 'Thin downward line from top to bottom', 'P is voiceless like whispering "pa"', 1),
-('ex-p2', 'l1', 'Write the outline for B (heavy sound)', 'Thick downward line from top to bottom', 'B is voiced like saying "ba" out loud', 2),
-('ex-p3', 'l1', 'Write the word "pay" using P stroke', 'P with first-place long vowel ā (heavy dash above)', 'First-place vowel goes above/beginning of stroke', 3),
-('ex-p4', 'l1', 'Write the word "bee" using B stroke', 'B with second-place long vowel ē (heavy dot at level)', 'Second-place vowel is level with the stroke', 4),
-('ex-p5', 'l1', 'Which stroke is heavier: P or B?', 'B is heavier (thick line), P is lighter (thin line)', 'Feel the thickness difference with your pen', 5),
 
--- L2 Exercises (T+D)
-('ex-t1', 'l2', 'Write the outline for T', 'Thin downward straight line', 'T is same shape as P but different sound', 1),
-('ex-t2', 'l2', 'Write the outline for D', 'Thick downward straight line', 'D is the voiced version of T', 2),
-('ex-t3', 'l2', 'Write "tie" using T stroke', 'T with first-place long vowel ī (heavy dot)', 'Long i at first place', 3),
-('ex-t4', 'l2', 'How is T different from P?', 'Same stroke shape, different sound determined by vowel position', 'Position tells you which consonant', 4),
+-- L1: Introduction
+('ex-1-1', 'l1', 'Who invented Pitman shorthand and in what year?', 'Sir Isaac Pitman, 1837', 'Think 19th century England', 1),
+('ex-1-2', 'l1', 'What does "phonetic" mean in Pitman shorthand?', 'You write by sound, not by spelling', 'Write what you HEAR', 2),
+('ex-1-3', 'l1', 'How are light and heavy sounds distinguished?', 'Light = thin stroke, Heavy = thick stroke', 'Pen pressure matters', 3),
+('ex-1-4', 'l1', 'What are the three vowel positions?', 'First (above/beginning), Second (level), Third (below/end)', 'Think beginning, middle, end of stroke', 4),
+('ex-1-5', 'l1', 'Name the three groups of Pitman consonants', 'Group 1: Downward straight, Group 2: Upward straight, Group 3: Curved', 'Think direction and shape', 5),
+('ex-1-6', 'l1', 'What is the purpose of joining strokes?', 'To increase writing speed without lifting the pen', 'Speed comes from continuous motion', 6),
+('ex-1-7', 'l1', 'What is the difference between writing and printing in Pitman?', 'Writing joins strokes continuously; printing writes each letter separately', 'One is for speed, the other for clarity', 7),
 
--- L3 Exercises (K+G)
-('ex-k1', 'l3', 'Write outline for K', 'Thin downward straight line', 'K is top-to-bottom like P and T', 1),
-('ex-k2', 'l3', 'Write outline for G', 'Thick downward straight line', 'G is the heavy version of K', 2),
-('ex-k3', 'l3', 'Write "go" using G stroke', 'G with second-place long vowel ō (heavy dash level)', 'Long o at second place', 3),
-('ex-k4', 'l3', 'Name all 6 downward straight strokes', 'Light: P, T, K — Heavy: B, D, G', 'Three light, three heavy', 4),
+-- L2: P and B
+('ex-2-1', 'l2', 'Draw the P stroke — describe its direction and thickness', 'Thin downward straight line from top to bottom', 'P is light (voiceless)', 1),
+('ex-2-2', 'l2', 'Draw the B stroke — how is it different from P?', 'Thick downward straight line. B is heavy, P is light.', 'B is voiced, P is voiceless', 2),
+('ex-2-3', 'l2', 'Write the outline for the word "pie"', 'P with first-place long vowel (heavy dot above)', 'First-place vowel goes above the stroke', 3),
+('ex-2-4', 'l2', 'Write the outline for the word "bee"', 'B with second-place long vowel (heavy dot level)', 'Second-place vowel is level with the stroke', 4),
+('ex-2-5', 'l2', 'Write the word "up" using P stroke', 'P light downward stroke alone', '"up" uses the P stroke as a contraction', 5),
+('ex-2-6', 'l2', 'Practice joining: P + B in "upbeat"', 'P downward + join at angle + B downward', 'Same direction = natural angle', 6),
+('ex-2-7', 'l2', 'Write the word "cab" using K and B', 'K light downward + B heavy downward', 'Join K and B at a natural angle', 7),
+('ex-2-8', 'l2', 'How do you distinguish P from B by feel?', 'P is thin (light pressure), B is thick (heavy pressure)', 'Pen pressure determines thickness', 8),
 
--- L4 Exercises (F+V)
-('ex-f1', 'l4', 'Write outline for F', 'Thin upward straight line', 'F goes from bottom to top', 1),
-('ex-f2', 'l4', 'Write outline for V', 'Thick upward straight line', 'V is the heavy version of F', 2),
-('ex-f3', 'l4', 'What direction do F and V go?', 'Upward — from bottom to top', 'Opposite to P/B/T/D/K/G', 3),
+-- L3: T and D
+('ex-3-1', 'l3', 'Draw the T stroke', 'Thin downward straight line', 'Same shape as P', 1),
+('ex-3-2', 'l3', 'Draw the D stroke', 'Thick downward straight line', 'Same shape as B', 2),
+('ex-3-3', 'l3', 'Write the outline for "tie"', 'T with first-place long vowel ī', 'First-place long i (heavy dot above)', 3),
+('ex-3-4', 'l3', 'Write the outline for "die"', 'D with first-place long vowel ī', 'First-place heavy dot on D', 4),
+('ex-3-5', 'l3', 'How is T different from P when both are thin downward strokes?', 'Different sound determined by vowel position and context', 'Same shape, different meaning', 5),
+('ex-3-6', 'l3', 'Write "it" using T stroke', 'T light downward with short i dot at third place', 'Short i below the stroke', 6),
+('ex-3-7', 'l3', 'Write "at" using T stroke', 'T light downward with short ă dot at first place', 'Short a above the stroke', 7),
 
--- L5 Exercises (TH+DH)
-('ex-th1', 'l5', 'Write outline for TH as in "think"', 'Thin upward straight line', 'TH is light upward', 1),
-('ex-th2', 'l5', 'Write outline for DH as in "the"', 'Thick upward straight line', 'DH is heavy upward — just write DH for "the"', 2),
-('ex-th3', 'l5', 'Write "this" using DH + S', 'DH heavy upward + S-circle', 'S-circle attached at the end of DH', 3),
+-- L4: CH and J
+('ex-4-1', 'l4', 'Draw the CH stroke', 'Thin downward straight line', 'Same direction as P and T', 1),
+('ex-4-2', 'l4', 'Draw the J stroke', 'Thick downward straight line', 'Heavy version of CH', 2),
+('ex-4-3', 'l4', 'Write "chin" using CH and N', 'CH light downward + N light curve', 'CH to N join smoothly', 3),
+('ex-4-4', 'l4', 'Write "edge" using J stroke', 'J heavy downward alone', 'J represents the -dge sound', 4),
+('ex-4-5', 'l4', 'Name all 8 Group 1 strokes', 'Light: P, T, CH, K — Heavy: B, D, J, G', '4 light, 4 heavy downward', 5),
 
--- L6 Exercises (S+Z)
-('ex-s1', 'l6', 'Write outline for S', 'Light upward curved stroke', 'S is a curve upward', 1),
-('ex-s2', 'l6', 'Write outline for Z', 'Heavy upward curved stroke', 'Z is the heavy version', 2),
-('ex-s3', 'l6', 'What is the S-circle?', 'A small circle representing S, attached to other strokes', 'Initial S clockwise, final S anticlockwise', 3),
+-- L5: K and G
+('ex-5-1', 'l5', 'Draw the K stroke', 'Thin downward straight line', 'Last of the light downward group', 1),
+('ex-5-2', 'l5', 'Draw the G stroke', 'Thick downward straight line', 'Last of the heavy downward group', 2),
+('ex-5-3', 'l5', 'Write "go" using G stroke', 'G heavy downward with second-place long vowel ō', 'Long o level with stroke', 3),
+('ex-5-4', 'l5', 'Write "kick" using K twice', 'K light downward + K light downward (retrograde join)', 'Retrograde because K+K is awkward angle', 4),
+('ex-5-5', 'l5', 'Write and speak all 8 Group 1 strokes in order', 'P (light), B (heavy), T (light), D (heavy), CH (light), J (heavy), K (light), G (heavy)', 'Practice this sequence daily', 5),
 
--- L7 Exercises (L+R)
-('ex-l1', 'l7', 'Write outline for L', 'Light clockwise curve written downward', 'L curves like a clockwise arc', 1),
-('ex-l2', 'l7', 'Write outline for R', 'Heavy anticlockwise curve written downward', 'R curves opposite to L', 2),
-('ex-l3', 'l7', 'What is an R-hook?', 'Hook on the R-curve side of a straight stroke (PR, BR, TR, DR, KR, GR)', 'R-hook represents R following the consonant', 3),
+-- L6: F and V
+('ex-6-1', 'l6', 'Draw the F stroke — describe direction', 'Thin upward straight line from bottom to top', 'First upward stroke — direction is REVERSED', 1),
+('ex-6-2', 'l6', 'Draw the V stroke', 'Thick upward straight line', 'Heavy version of F', 2),
+('ex-6-3', 'l6', 'Write "fee" using F stroke', 'F light upward with second-place long vowel ē', 'Long e level with the stroke', 3),
+('ex-6-4', 'l6', 'What direction do F and V go? How is this different from Group 1?', 'F and V go UP (bottom to top). Group 1 goes DOWN (top to bottom).', 'Opposite direction changes vowel placement', 4),
+('ex-6-5', 'l6', 'Write "have" using H and V', 'H dot (before vowel) + V heavy upward', 'H is a dot before the V stroke', 5),
 
--- L8 Exercises (M+N)
-('ex-m1', 'l8', 'Write outline for M', 'Heavy clockwise curve downward', 'M is thick like humming "mmm"', 1),
-('ex-m2', 'l8', 'Write outline for N', 'Light clockwise curve downward', 'N is thin, lighter than M', 2),
-('ex-m3', 'l8', 'Write "in" using N stroke only', 'N light curve alone', '"in" is a standard N stroke contraction', 3),
+-- L7: TH and DH
+('ex-7-1', 'l7', 'Draw the TH stroke', 'Thin upward straight line', 'As in "thin"', 1),
+('ex-7-2', 'l7', 'Draw the DH stroke', 'Thick upward straight line', 'As in "the"', 2),
+('ex-7-3', 'l7', 'Write the word "the" using DH stroke', 'DH heavy upward alone', 'Just one stroke for "the"', 3),
+('ex-7-4', 'l7', 'Write "this" using DH and S', 'DH heavy upward + S-circle anticlockwise', 'DH + final S-circle', 4),
+('ex-7-5', 'l7', 'Write "that" using DH and halved T', 'DH heavy upward + halved T light', 'TH heavy + T light halved', 5),
 
--- L9 Exercises (Vowels)
-('ex-v1', 'l9', 'How is short vowel ă written?', 'Light dot at first-place position (above/beginning of stroke)', 'First-place short vowel', 1),
-('ex-v2', 'l9', 'How is long vowel ō written?', 'Heavy dash at first-place position', 'Long o is a heavy dash at first place', 2),
-('ex-v3', 'l9', 'What are the three vowel positions?', 'First (above/beginning), Second (level), Third (below/end)', 'Three places for three sets of vowels', 3),
-('ex-v4', 'l9', 'What does the I diphthong look like?', 'A downward hook', 'Like a small hook pointing down', 4),
+-- L8: S and Z
+('ex-8-1', 'l8', 'Draw the S stroke', 'Light upward curved stroke', 'S is a curve, not straight', 1),
+('ex-8-2', 'l8', 'Draw the Z stroke', 'Heavy upward curved stroke', 'Heavy version of S', 2),
+('ex-8-3', 'l8', 'What is the S-circle and when is it used?', 'A small circle representing S, attached to other strokes at beginning or end', 'S-circle is MORE common than the S stroke', 3),
+('ex-8-4', 'l8', 'Write "cats" using K+T+S-circle', 'K + halved T + final S-circle', 'Final S-circle = anticlockwise', 4),
+('ex-8-5', 'l8', 'Write "speak" using S-circle + P + K', 'Initial S-circle (clockwise) + P + K', 'Initial S-circle = clockwise', 5),
 
--- L10 Exercises (Joining)
-('ex-j1', 'l10', 'How do you join P and T (same direction)?', 'Join at a 45-degree natural angle', 'Same direction = natural angle', 1),
-('ex-j2', 'l10', 'How do you join P and B (opposite direction)?', 'Write back-to-back', 'Opposite direction = back-to-back', 2),
-('ex-j3', 'l10', 'When do you lift the pen?', 'When strokes cannot join smoothly (retrograde)', 'Lift only when necessary', 3)
-ON CONFLICT (id) DO NOTHING;
+-- L9: SH and ZH
+('ex-9-1', 'l9', 'Draw the SH stroke', 'Light upward straight stroke', 'As in "ship"', 1),
+('ex-9-2', 'l9', 'Draw the ZH stroke', 'Heavy upward straight stroke', 'As in "measure"', 2),
+('ex-9-3', 'l9', 'Name all 8 Group 2 upward strokes', 'Light: F, TH, S, SH — Heavy: V, DH, Z, ZH', '4 light, 4 heavy upward', 3),
+
+-- L10: L and R
+('ex-10-1', 'l10', 'Draw the L stroke — describe curve and direction', 'Light clockwise curve, written downward', 'L curves to the right (clockwise)', 1),
+('ex-10-2', 'l10', 'Draw the R stroke', 'Heavy anticlockwise curve, written downward', 'R curves to the left (anticlockwise)', 2),
+('ex-10-3', 'l10', 'What is an R-hook?', 'A clockwise hook on a straight stroke that adds R sound (PR, BR, TR, etc.)', 'Hook on the R-curve side', 3),
+('ex-10-4', 'l10', 'What is an L-hook?', 'An anticlockwise hook on a straight stroke that adds L sound (PL, BL, KL, GL)', 'Hook on the L side (opposite of R)', 4),
+
+-- L11: M and N
+('ex-11-1', 'l11', 'Draw the M stroke', 'Heavy clockwise curve downward', 'M is thick, like humming', 1),
+('ex-11-2', 'l11', 'Draw the N stroke', 'Light clockwise curve downward', 'N is thin, lighter version of M', 2),
+('ex-11-3', 'l11', 'Write "in" using N stroke alone', 'N light curve by itself', '"in" is a standard contraction', 3),
+
+-- L12: NG, NK, W, Y, H
+('ex-12-1', 'l12', 'Draw the NG stroke', 'Light downward curve with tail', 'As in "sing" — note the tail', 1),
+('ex-12-2', 'l12', 'Draw the NK stroke', 'Heavy downward curve with tail', 'As in "sink" — heavy version', 2),
+('ex-12-3', 'l12', 'Draw the W stroke', 'Light upward hook', 'As in "we" — upward hook', 3),
+('ex-12-4', 'l12', 'How is H written in Pitman?', 'As a light dot placed before the following vowel', 'H is not a full stroke, just a dot', 4),
+('ex-12-5', 'l12', 'Name all Group 3 strokes', 'L, R, M, N, NG, NK, W, Y, H (dot)', '9 curved strokes plus H', 5),
+
+-- Vowel exercises
+('ex-13-1', 'l13', 'Write the short vowel ă (where and how)', 'Light dot at first-place position (above/beginning of stroke)', 'Short a = light dot at first place', 1),
+('ex-13-2', 'l13', 'Write the short vowel ĕ', 'Light dot at second-place position (level with stroke)', 'Short e = light dot at second place', 2),
+('ex-13-3', 'l13', 'Write the short vowel ŏ', 'Light dash at first-place position', 'Short o = light dash at first place', 3),
+('ex-14-1', 'l14', 'Write the long vowel ā', 'Heavy dot at first-place position', 'Long a = heavy dot at first place', 1),
+('ex-14-2', 'l14', 'Write the long vowel ō', 'Heavy dash at first-place position', 'Long o = heavy dash at first place', 2),
+('ex-14-3', 'l14', 'What is the difference between short and long vowels?', 'Short = light mark, Long = heavy mark', 'Weight distinguishes short from long', 3),
+('ex-15-1', 'l15', 'Write the I diphthong (eye)', 'Downward hook at first-place position', 'I = downward hook, as in "eye"', 1),
+('ex-15-2', 'l15', 'Write the OW diphthong', 'Upward hook at second-place position', 'OW = upward hook, as in "cow"', 2),
+('ex-15-3', 'l15', 'Write the OI diphthong', 'Combined hook at third-place position', 'OI = combined hook, as in "boy"', 3),
+
+-- Joining exercises
+('ex-16-1', 'l16', 'Join P and T (same direction)', 'Join at a natural 45-degree angle', 'Both go down, meet at angle', 1),
+('ex-16-2', 'l16', 'Join P and B (opposite direction)', 'Write back-to-back', 'P goes up... wait, P goes down. P+B both go down!', 2),
+('ex-16-3', 'l16', 'Join M and P (curve to straight)', 'M curve end joins to P start', 'Curve naturally flows to straight', 3),
+('ex-16-4', 'l16', 'When do you use retrograde joining?', 'When strokes cannot join smoothly, lift the pen', 'Better to lift than to force an awkward join', 4),
+('ex-17-1', 'l17', 'Write PR using an R-hook on P', 'P stroke with clockwise R-hook at beginning', 'R-hook = clockwise on P', 1),
+('ex-17-2', 'l17', 'Write PL using an L-hook on P', 'P stroke with anticlockwise L-hook at beginning', 'L-hook = anticlockwise on P', 2),
+('ex-18-1', 'l18', 'Write "speak" using initial S-circle', 'Clockwise S-circle + P + K', 'Initial S = clockwise', 1),
+('ex-18-2', 'l18', 'Write "cats" using final S-circle', 'K + T + anticlockwise S-circle', 'Final S = anticlockwise', 2),
+('ex-19-1', 'l19', 'Write "sweet" using SW-loop', 'Large initial SW-loop + W + T', 'SW-loop is LARGER than S-circle', 1),
+('ex-19-2', 'l19', 'Write "past" using ST-loop', 'P + ST-loop on opposite side', 'ST-loop on OPPOSITE side from S-circle', 2),
+('ex-20-1', 'l20', 'Halve the P stroke — what sound does it add?', 'Halved P (light) = adds T sound = PT', 'Light halved = +T', 1),
+('ex-20-2', 'l20', 'Halve the B stroke — what does it add?', 'Halved B (heavy) = adds D sound = BD', 'Heavy halved = +D', 2),
+('ex-20-3', 'l20', 'Write "kept" using K + halved P', 'K stroke + halved P (light = PT)', 'K + P-halved = "kept"', 3),
+('ex-21-1', 'l21', 'Double the M stroke — what does it add?', 'Doubled M = adds TR or DR sound = MTR/MDR', 'Double curved = +TR/+DR', 1),
+('ex-21-2', 'l21', 'Write "matter" using doubled M', 'M doubled = MTR with vowel', 'M at double length = "matter"', 2),
+('ex-22-1', 'l22', 'Write "connect" using con- prefix', 'Dot + N + K + T', 'con- = dot before the stroke', 1),
+('ex-23-1', 'l23', 'Write "running" using -ing suffix', 'R + N + NG stroke (light curve)', '-ing = NG stroke', 1),
+('ex-24-1', 'l24', 'Write the phrase "I am" joined', 'I diphthong (down hook) + M curve, continuous', 'I + M without pen lift', 1),
+('ex-24-2', 'l24', 'Write the phrase "I have"', 'I diphthong + V heavy upward, continuous', 'I + V without lifting', 2),
+('ex-25-1', 'l25', 'Write the contraction for "the"', 'DH heavy upward stroke alone', 'One stroke = "the"', 1),
+('ex-25-2', 'l25', 'Write the contraction for "and"', 'N dot or N curve alone', 'N = "and"', 2),
+('ex-25-3', 'l25', 'Write the contraction for "to"', 'T upward stroke alone', 'T written upward = "to"', 3),
+('ex-26-1', 'l26', 'What is the first stage of speed building?', 'Stage 1: Accuracy first (20-30 WPM)', 'Get it right before getting fast', 1),
+('ex-26-2', 'l26', 'How many minutes should you practice daily?', '15-30 minutes every day', 'Consistency beats marathon sessions', 2),
+('ex-26-3', 'l26', 'What is the professional-level WPM target?', '150-200+ WPM', 'Professional court reporters reach 200+ WPM', 3),
+('ex-26-4', 'l26', 'What should you focus on when increasing speed?', 'Smooth joining, phrasing, and automatic stroke formation', 'Automaticity is the key to speed', 4);
 
 -- ============================================================
--- QUIZZES per lesson
+-- QUIZZES (50+ comprehensive quizzes)
 -- ============================================================
 INSERT INTO "Quiz" (id, lesson_id, question, options, correct, "order") VALUES
-('qz1', 'l1', 'What direction is the P stroke written?', '["Left to right","Top to bottom","Bottom to top","Right to left"]', 1, 1),
-('qz2', 'l1', 'How do you distinguish P from B?', '["P is curved, B is straight","P is thin (light), B is thick (heavy)","P is upward, B is downward","P is dotted, B is dashed"]', 1, 2),
-('qz3', 'l2', 'T and D are written in which direction?', '["Bottom to top","Left to right","Top to bottom","Diagonal"]', 2, 1),
-('qz4', 'l3', 'How many downward straight strokes are there?', '["4","6","8","3"]', 1, 1),
-('qz5', 'l4', 'F and V are written in which direction?', '["Top to bottom","Bottom to top","Left to right","Curved"]', 1, 1),
-('qz6', 'l5', 'Which stroke represents "the"?', '["T light","TH light","DH heavy","D heavy"]', 2, 1),
-('qz7', 'l6', 'S can be written as a stroke or as what?', '["A dot","A dash","A small circle","A hook"]', 2, 1),
-('qz8', 'l7', 'What does an R-hook represent?', '["A vowel","R following the consonant","A silent letter","A word ending"]', 1, 1),
-('qz9', 'l7', 'A PL blend uses which hook?', '["R-hook","L-hook","S-circle","ST-loop"]', 1, 1),
-('qz10', 'l8', 'M is what kind of stroke?', '["Light upward","Heavy clockwise curve","Light downward straight","Heavy dash"]', 1, 1),
-('qz11', 'l9', 'First-place vowel is positioned where?', '["Below the stroke","Level with the stroke","Above/beginning of the stroke","At the end"]', 2, 1),
-('qz12', 'l9', 'A light dot represents what kind of vowel?', '["Long vowel","Short vowel","Diphthong","Triphthong"]', 1, 2),
-('qz13', 'l10', 'Same direction strokes join at what angle?', '["90 degrees","Natural angle (about 45)","180 degrees","0 degrees"]', 1, 1),
-('qz14', 'l10', 'What is retrograde joining?', '["Writing backwards","Lifting the pen between unjoinable strokes","Joining at 90 degrees","Using a loop"]', 1, 2)
-ON CONFLICT (id) DO NOTHING;
+('qz-1', 'l1', 'Who invented Pitman shorthand?', '["John Gregg","Isaac Pitman","James Teeline","Samuel Pepys"]', 1, 1),
+('qz-2', 'l1', 'What does "phonetic" mean in Pitman?', '["Write by spelling","Write by sound","Write by meaning","Write by context"]', 1, 2),
+('qz-3', 'l1', 'Light strokes represent what kind of sounds?', '["Voiced","Voiceless","Nasal","Vowel"]', 1, 3),
+('qz-4', 'l1', 'How many basic consonant groups are there?', '["2","3","4","5"]', 1, 4),
+('qz-5', 'l2', 'What direction is the P stroke written?', '["Left to right","Top to bottom","Bottom to top","Diagonal"]', 1, 1),
+('qz-6', 'l2', 'How is B different from P?', '["Curved vs straight","Thick vs thin","Up vs down","Long vs short"]', 1, 2),
+('qz-7', 'l3', 'T and D are written in which direction?', '["Bottom to top","Top to bottom","Left to right","Curved"]', 1, 1),
+('qz-8', 'l4', 'How many light downward straight strokes are there?', '["2","4","6","8"]', 1, 1),
+('qz-9', 'l5', 'Name all 8 Group 1 strokes', '["P B T D F V K G","P B T D CH J K G","P B K G F V TH DH","P B L R M N NG NK"]', 1, 1),
+('qz-10', 'l6', 'What direction are F and V written?', '["Top to bottom","Bottom to top","Left to right","Curved"]', 1, 1),
+('qz-11', 'l7', 'Which stroke represents the word "the"?', '["T light","TH light","DH heavy","D heavy"]', 2, 1),
+('qz-12', 'l8', 'S-circle initial is written in which direction?', '["Anticlockwise","Clockwise","Either","Depends on stroke"]', 1, 1),
+('qz-13', 'l9', 'Name the 4 light upward strokes', '["F V S Z","F TH S SH","P T CH K","L R M N"]', 1, 1),
+('qz-14', 'l10', 'L is what kind of curve?', '["Heavy anticlockwise","Light clockwise","Heavy clockwise","Light anticlockwise"]', 1, 1),
+('qz-15', 'l10', 'An R-hook on a straight stroke adds which sound?', '["L","R","S","T"]', 1, 2),
+('qz-16', 'l11', 'M and N are what kind of sounds?', '["Plosive","Nasal","Fricative","Liquid"]', 1, 1),
+('qz-17', 'l12', 'How is H written in Pitman?', '["Full stroke","Light dot","Heavy dash","Hook"]', 1, 1),
+('qz-18', 'l13', 'First-place short vowel uses what mark?', '["Light dot","Heavy dot","Light dash","Heavy dash"]', 0, 1),
+('qz-19', 'l14', 'Long vowels are written with what kind of mark?', '["Light","Heavy","Always dots","Always dashes"]', 1, 1),
+('qz-20', 'l15', 'The I diphthong (eye) is written as what?', '["Upward hook","Downward hook","Combined hook","Light dot"]', 1, 1),
+('qz-21', 'l16', 'Same-direction strokes join at what angle?', '["90 degrees","Natural angle (45)","180 degrees","0 degrees"]', 1, 1),
+('qz-22', 'l17', 'R-hook curves in which direction?', '["Clockwise","Anticlockwise","Either","Depends on stroke"]', 0, 1),
+('qz-23', 'l18', 'Initial S-circle is written which way?', '["Clockwise","Anticlockwise","Same as final","Both ways"]', 0, 1),
+('qz-24', 'l19', 'ST-loop is written on which side?', '["Same as S-circle","Opposite to S-circle","Inside the curve","Outside the curve"]', 1, 1),
+('qz-25', 'l20', 'Halving a light stroke adds what sound?', '["D","T","R","S"]', 1, 1),
+('qz-26', 'l20', 'Halving a heavy stroke adds what sound?', '["T","D","R","N"]', 1, 2),
+('qz-27', 'l21', 'Doubling applies to what type of strokes?', '["Straight only","Curved only","All strokes","Dot only"]', 1, 1),
+('qz-28', 'l22', 'The con-/com- prefix is written as what?', '["N stroke","Dot before stroke","K + N","C stroke"]', 1, 1),
+('qz-29', 'l23', 'The -ing suffix is written as what?', '["N curve","NG stroke","Halved N","N dot"]', 1, 1),
+('qz-30', 'l24', 'What is phrasing in Pitman?', '["Writing slowly","Joining words without lifting","Using abbreviations","Changing stroke size"]', 1, 1),
+('qz-31', 'l25', 'The contraction for "the" is what stroke?', '["T light","TH light","DH heavy","D heavy"]', 2, 1),
+('qz-32', 'l25', 'The contraction for "and" is?', '["A stroke","N dot/stroke","D stroke","DH stroke"]', 1, 2),
+('qz-33', 'l26', 'What is the first priority in speed building?', '["Speed","Accuracy","Style","Pen choice"]', 1, 1),
+('qz-34', 'l26', 'Professional Pitman writers can reach what speed?', '["100 WPM","150 WPM","200+ WPM","300 WPM"]', 2, 2),
+('qz-35', 'l26', 'How long should daily practice be?', '["5 minutes","15-30 minutes","1-2 hours","4+ hours"]', 1, 3);

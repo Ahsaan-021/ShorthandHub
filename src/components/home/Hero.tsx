@@ -1,7 +1,6 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { BookOpen } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const containerVariants = {
@@ -58,8 +57,12 @@ export function Hero() {
         </div>
 
         <motion.div variants={itemVariants} className="flex-1">
-          <div className="glass flex aspect-square items-center justify-center rounded-2xl p-12 animate-float">
-            <BookOpen className="h-32 w-32 text-primary/60" />
+          <div className="glass overflow-hidden rounded-2xl">
+            <img
+              src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=80"
+              alt="Student learning with notebook and pen"
+              className="h-full w-full object-cover aspect-square"
+            />
           </div>
         </motion.div>
       </motion.div>

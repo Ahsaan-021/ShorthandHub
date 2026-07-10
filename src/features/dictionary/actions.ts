@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 
 export async function searchDictionary(query: string, courseType?: string) {
-  return db.dictionary.findMany({
+  const results = await db.dictionary.findMany({
     where: {
       ...(query
         ? {
@@ -21,6 +21,20 @@ export async function searchDictionary(query: string, courseType?: string) {
     orderBy: { word: "asc" },
     take: 50,
   });
+
+  // Sort: exact matches first, then starts-with, then contains
+  if (query) {
+    const q = query.toLowerCase();
+    results.sort((a, b) => {
+      const aWord = a.word.toLowerCase();
+      const bWord = b.word.toLowerCase();
+      const aExact = aWord === q ? 0 : aWord.startsWith(q) ? 1 : 2;
+      const bExact = bWord === q ? 0 : bWord.startsWith(q) ? 1 : 2;
+      return aExact - bExact || aWord.localeCompare(bWord);
+    });
+  }
+
+  return results;
 }
 
 export async function getWordBySlug(slug: string) {

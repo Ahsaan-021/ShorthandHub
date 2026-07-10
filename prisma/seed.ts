@@ -362,7 +362,7 @@ Court reporters, transcriptionists, journalists, and medical transcribers remain
 Shorthand works with just a pen and paper — no internet, no batteries, no software updates. It's the ultimate backup for any professional note-taker.
 
 Join ShorthandHub and start your journey today!`,
-      coverImage: "/images/blog/pitman-digital-age.jpg",
+      coverImage: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&q=80",
       readingTime: 4,
       published: true,
       featured: true,
@@ -400,7 +400,7 @@ Join ShorthandHub and start your journey today!`,
 10. Identify your slow spots — specific strokes or combinations where you hesitate — and drill them.
 
 By the end of 30 days, you should see a significant improvement in both speed and confidence. Consistency is key!`,
-      coverImage: "/images/blog/speed-tips.jpg",
+      coverImage: "https://images.unsplash.com/photo-1517842645767-c639042777db?w=800&q=80",
       readingTime: 5,
       published: true,
       featured: false,
@@ -434,7 +434,7 @@ Choosing a shorthand system is a big decision. Here's how the three major system
 **Teeline** — The fastest to learn (can be mastered in weeks). It's the standard for journalism education in the UK.
 
 At ShorthandHub, we support all three systems. Start with the one that matches your goals!`,
-      coverImage: "/images/blog/comparison.jpg",
+      coverImage: "https://images.unsplash.com/photo-1491841550275-ad7854e35ca6?w=800&q=80",
       readingTime: 6,
       published: true,
       featured: true,

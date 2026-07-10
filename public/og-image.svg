@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#4f46e5"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#0f0f1a"/>
+  <rect width="1200" height="630" fill="url(#g)" opacity="0.15"/>
+  <text x="600" y="280" text-anchor="middle" font-family="system-ui, sans-serif" font-size="72" font-weight="bold" fill="white">ShorthandHub</text>
+  <text x="600" y="360" text-anchor="middle" font-family="system-ui, sans-serif" font-size="28" fill="#a1a1aa">Master Pitman, Gregg &amp; Teeline Shorthand</text>
+  <path d="M470 310 L490 310 L490 330" stroke="#7c3aed" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M730 310 L710 310 L710 330" stroke="#7c3aed" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M570 310 L600 290 L630 310" stroke="#7c3aed" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
