@@ -174,8 +174,7 @@ function StrokesRenderer({ strokes }: { strokes: StrokeSeg[] }) {
   let currentX = 10;
 
   strokes.forEach((seg, i) => {
-    const tooClose = prevExit && currentX < prevExit.x + 3;
-    if (tooClose) currentX = prevExit.x + 3;
+    if (prevExit && currentX < prevExit.x + 3) currentX = prevExit.x + 3;
 
     const x = currentX;
     const sw = seg.heavy ? 3.8 : 1.5;
