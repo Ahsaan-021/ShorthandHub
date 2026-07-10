@@ -29,6 +29,11 @@ interface Lesson {
   quizzes: any[];
 }
 
+function clean(s: string | null): string {
+  if (!s) return "";
+  return s.replace(/\\n/g, "\n");
+}
+
 export function LessonDetailContent({ lesson }: { lesson: Lesson }) {
   const [showTheory, setShowTheory] = useState(true);
   const [showRules, setShowRules] = useState(true);
@@ -111,7 +116,7 @@ export function LessonDetailContent({ lesson }: { lesson: Lesson }) {
           {showTheory && (
             <div className="p-4 pt-0 border-t">
               <div className="prose prose-sm dark:prose-invert max-w-none mt-4">
-                {lesson.theory.split('\n').map((line, i) => (
+                {clean(lesson.theory).split('\n').map((line, i) => (
                   <p key={i} className="mb-2">{line}</p>
                 ))}
               </div>
@@ -140,7 +145,7 @@ export function LessonDetailContent({ lesson }: { lesson: Lesson }) {
           {showRules && (
             <div className="p-4 pt-0 border-t">
               <ul className="mt-4 space-y-2">
-                {lesson.rules.split('\n').filter(Boolean).map((rule, i) => (
+                {clean(lesson.rules).split('\n').filter(Boolean).map((rule, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm">
                     <span className="mt-1 block h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
                     {rule.replace(/^\d+\.\s*/, '')}
@@ -161,7 +166,7 @@ export function LessonDetailContent({ lesson }: { lesson: Lesson }) {
         >
           <h2 className="text-lg font-semibold mb-4">Lesson Content</h2>
           <div className="prose prose-sm dark:prose-invert max-w-none">
-            {lesson.content.split('\n').map((line, i) => {
+            {clean(lesson.content).split('\n').map((line, i) => {
               if (line.startsWith('## ')) {
                 return <h3 key={i} className="text-base font-semibold mt-4 mb-2">{line.replace('## ', '')}</h3>;
               }
