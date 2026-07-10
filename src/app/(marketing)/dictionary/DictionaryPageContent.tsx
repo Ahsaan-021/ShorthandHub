@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
-import { Heart, Search, X, Keyboard, Type } from "lucide-react";
+import { Heart, Search, X, Keyboard, Type, TextQuote } from "lucide-react";
+import { PitmanConverter } from "@/components/dictionary/PitmanConverter";
 import { cn } from "@/lib/utils";
 import { useDebounce } from "@/hooks/useDebounce";
 import { WordCard } from "@/components/dictionary/WordCard";
@@ -32,6 +33,7 @@ export function DictionaryPageContent({ initialEntries }: Props) {
   const [loading, setLoading] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [converterMode, setConverterMode] = useState(false);
   const debouncedQuery = useDebounce(query, 300);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -95,7 +97,9 @@ export function DictionaryPageContent({ initialEntries }: Props) {
       >
         <h1 className="text-4xl font-bold mb-4">Shorthand Dictionary</h1>
         <p className="text-muted-foreground">
-          Type a word for its Pitman shorthand outline, or type a full sentence to see phrase-connected outlines.
+          {converterMode
+            ? "Type or paste a sentence or paragraph below to convert to connected Pitman shorthand outlines."
+            : "Type a word for its Pitman shorthand outline, or type a full sentence to see phrase-connected outlines."}
         </p>
       </motion.div>
 
@@ -105,73 +109,88 @@ export function DictionaryPageContent({ initialEntries }: Props) {
         transition={{ delay: 0.1, duration: 0.5 }}
         className="max-w-2xl mx-auto space-y-4"
       >
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
-            ref={inputRef}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Type a word or sentence for Pitman shorthand outlines..."
-            className="w-full pl-10 pr-20 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary text-base"
-          />
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-            {query && debouncedQuery.includes(" ") && (
-              <span className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono rounded bg-primary/10 text-primary border border-primary/20">
-                <Type className="w-2.5 h-2.5" />
-                Sentence
-              </span>
-            )}
-            {query && (
-              <button
-                onClick={() => setQuery("")}
-                className="text-muted-foreground hover:text-foreground p-1"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono rounded border bg-muted text-muted-foreground">
-              <Keyboard className="w-2.5 h-2.5" />
-              <span>⌘K</span>
-            </kbd>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex gap-1">
-            {COURSE_TABS.map((tab) => (
-              <button
-                key={tab.value}
-                onClick={() => setCourseType(tab.value)}
-                className={cn(
-                  "px-3 py-1.5 text-xs rounded-full transition-colors font-medium",
-                  courseType === tab.value
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+        {converterMode ? (
+          <PitmanConverter />
+        ) : (
+          <>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                ref={inputRef}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Type a word or sentence for Pitman shorthand outlines..."
+                className="w-full pl-10 pr-20 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary text-base"
+              />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                {query && debouncedQuery.includes(" ") && (
+                  <span className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono rounded bg-primary/10 text-primary border border-primary/20">
+                    <Type className="w-2.5 h-2.5" />
+                    Sentence
+                  </span>
                 )}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-          <button
-            onClick={() => setShowFavorites(!showFavorites)}
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full transition-colors font-medium",
-              showFavorites
-                ? "bg-red-500/10 text-red-500"
-                : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-            )}
-          >
-            <Heart className={cn("h-3.5 w-3.5", showFavorites && "fill-current")} />
-            Favorites
-          </button>
-        </div>
+                {query && (
+                  <button
+                    onClick={() => setQuery("")}
+                    className="text-muted-foreground hover:text-foreground p-1"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+                <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono rounded border bg-muted text-muted-foreground">
+                  <Keyboard className="w-2.5 h-2.5" />
+                  <span>⌘K</span>
+                </kbd>
+              </div>
+            </div>
 
-        {debouncedQuery && debouncedQuery.includes(" ") && (
-          <div className="bg-muted/50 rounded-lg p-3 border text-xs text-muted-foreground">
-            <p className="font-medium mb-1">How sentence mode works:</p>
-            <p>The sentence is split into <strong>sense groups</strong> (natural Pitman phrases). Each sense group shows its connected stroke outline. Common phrases like &ldquo;I have been&rdquo;, &ldquo;in the&rdquo;, or &ldquo;there is&rdquo; are recognized and joined automatically.</p>
-          </div>
+            <div className="flex items-center justify-between">
+              <div className="flex gap-1">
+                {COURSE_TABS.map((tab) => (
+                  <button
+                    key={tab.value}
+                    onClick={() => setCourseType(tab.value)}
+                    className={cn(
+                      "px-3 py-1.5 text-xs rounded-full transition-colors font-medium",
+                      courseType === tab.value
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                    )}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-1.5">
+                <button
+                  onClick={() => setConverterMode(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors font-medium"
+                >
+                  <TextQuote className="w-3.5 h-3.5" />
+                  Converter
+                </button>
+                <button
+                  onClick={() => setShowFavorites(!showFavorites)}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full transition-colors font-medium",
+                    showFavorites
+                      ? "bg-red-500/10 text-red-500"
+                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  )}
+                >
+                  <Heart className={cn("h-3.5 w-3.5", showFavorites && "fill-current")} />
+                  Favorites
+                </button>
+              </div>
+            </div>
+
+            {debouncedQuery && debouncedQuery.includes(" ") && (
+              <div className="bg-muted/50 rounded-lg p-3 border text-xs text-muted-foreground">
+                <p className="font-medium mb-1">How sentence mode works:</p>
+                <p>The sentence is split into <strong>sense groups</strong> (natural Pitman phrases). Each sense group shows its connected stroke outline. Common phrases like &ldquo;I have been&rdquo;, &ldquo;in the&rdquo;, or &ldquo;there is&rdquo; are recognized and joined automatically.</p>
+              </div>
+            )}
+          </>
         )}
       </motion.div>
 
