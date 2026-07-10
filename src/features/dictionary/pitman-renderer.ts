@@ -1,47 +1,63 @@
-// Self-contained Pitman shorthand SVG renderer
-// Renders stroke sequences (e.g. "K-T", "F-R-M") as proper Pitman glyphs
-// Fully self-contained — no external API dependencies
-
 export interface PitmanStrokeDef {
-  angle: number       // degrees from positive x-axis (counter-clockwise)
-  length: number      // stroke length in units
-  voiced: boolean     // thick (voiced) / thin (voiceless)
-  curve: number       // quadratic bezier curve offset; 0 = straight
+  angle: number
+  length: number
+  voiced: boolean
+  curve: number
   label: string
-  endSide: "right" | "left" | "bottom" | "top"  // which side the "tip" is on (for joining)
+  endSide: "right" | "left" | "bottom" | "top"
 }
 
 const STROKE_DEFS: Record<string, PitmanStrokeDef> = {
-  P:    { angle: 135, length: 32, voiced: false, curve: 0,  label: "P",  endSide: "left" },
-  B:    { angle: 135, length: 32, voiced: true,  curve: 0,  label: "B",  endSide: "left" },
-  SH:   { angle: 135, length: 28, voiced: false, curve: 6,  label: "SH", endSide: "left" },
-  ZH:   { angle: 135, length: 28, voiced: true,  curve: 6,  label: "ZH", endSide: "left" },
+  // Downstrokes — written top→bottom
+  // P/B: 45° from vertical, right-leaning (backslash direction)
+  P:  { angle: -45, length: 32, voiced: false, curve: 0,  label: "P",  endSide: "bottom" },
+  B:  { angle: -45, length: 32, voiced: true,  curve: 0,  label: "B",  endSide: "bottom" },
+  // T/D: vertical down (straight)
+  T:  { angle: -90, length: 30, voiced: false, curve: 0,  label: "T",  endSide: "bottom" },
+  D:  { angle: -90, length: 30, voiced: true,  curve: 0,  label: "D",  endSide: "bottom" },
+  // CH/J: 30° from vertical, left-leaning (forward-slash direction)
+  CH: { angle: -120, length: 34, voiced: false, curve: 0,  label: "CH", endSide: "bottom" },
+  J:  { angle: -120, length: 34, voiced: true,  curve: 0,  label: "J",  endSide: "bottom" },
+  // K/G: horizontal left→right
+  K:  { angle: 0,   length: 32, voiced: false, curve: 0,  label: "K",  endSide: "right" },
+  G:  { angle: 0,   length: 32, voiced: true,  curve: 0,  label: "G",  endSide: "right" },
+  // R (Ar): same direction as P/B (down-right, 45°)
+  R:  { angle: -45, length: 30, voiced: false, curve: 0,  label: "R",  endSide: "bottom" },
+  // H (downward): 30° from vertical, left-leaning (like CH but lighter)
+  H:  { angle: -120, length: 20, voiced: false, curve: 0,  label: "H",  endSide: "bottom" },
 
-  T:    { angle: 0,   length: 30, voiced: false, curve: 0,  label: "T",  endSide: "right" },
-  D:    { angle: 0,   length: 30, voiced: true,  curve: 0,  label: "D",  endSide: "right" },
-  TH:   { angle: 0,   length: 28, voiced: false, curve: 0,  label: "TH", endSide: "right" },
-  DH:   { angle: 0,   length: 28, voiced: true,  curve: 0,  label: "DH", endSide: "right" },
+  // Curved downstrokes
+  // F/V: 45° down-right, quarter-circle opening upward
+  F:  { angle: -45, length: 30, voiced: false, curve: 7,  label: "F",  endSide: "bottom" },
+  V:  { angle: -45, length: 30, voiced: true,  curve: 7,  label: "V",  endSide: "bottom" },
+  // TH/DH: vertical down, quarter-circle opening right
+  TH: { angle: -90, length: 28, voiced: false, curve: 7,  label: "TH", endSide: "bottom" },
+  DH: { angle: -90, length: 28, voiced: true,  curve: 7,  label: "DH", endSide: "bottom" },
+  // S/Z: vertical down, quarter-circle opening left (half-length)
+  S:  { angle: -90, length: 15, voiced: false, curve: -5, label: "S",  endSide: "bottom" },
+  Z:  { angle: -90, length: 15, voiced: true,  curve: -5, label: "Z",  endSide: "bottom" },
+  // SH/ZH: 45° down-right, quarter-circle opening upward
+  SH: { angle: -45, length: 28, voiced: false, curve: 7,  label: "SH", endSide: "bottom" },
+  ZH: { angle: -45, length: 28, voiced: true,  curve: 7,  label: "ZH", endSide: "bottom" },
 
-  K:    { angle: 45,  length: 32, voiced: false, curve: 0,  label: "K",  endSide: "top" },
-  G:    { angle: 45,  length: 32, voiced: true,  curve: 0,  label: "G",  endSide: "top" },
-  CH:   { angle: 52,  length: 34, voiced: false, curve: 0,  label: "CH", endSide: "top" },
-  J:    { angle: 52,  length: 34, voiced: true,  curve: 0,  label: "J",  endSide: "top" },
+  // Horizontal curved strokes (left→right)
+  // M: curves below the baseline (U-shape)
+  M:  { angle: 0,   length: 30, voiced: true,  curve: -8, label: "M",  endSide: "right" },
+  // N/NG: curves above the baseline (arch)
+  N:  { angle: 0,   length: 28, voiced: false, curve: 8,  label: "N",  endSide: "right" },
+  NG: { angle: 0,   length: 28, voiced: false, curve: 8,  label: "NG", endSide: "right" },
 
-  F:    { angle: 45,  length: 30, voiced: false, curve: 5,  label: "F",  endSide: "top" },
-  V:    { angle: 45,  length: 30, voiced: true,  curve: 5,  label: "V",  endSide: "top" },
-
-  L:    { angle: 45,  length: 28, voiced: false, curve: 0,  label: "L",  endSide: "top" },
-  R:    { angle: 135, length: 28, voiced: false, curve: 0,  label: "R",  endSide: "left" },
-
-  M:    { angle: 0,   length: 30, voiced: true,  curve: 8,  label: "M",  endSide: "right" },
-  N:    { angle: 0,   length: 28, voiced: false, curve: 6,  label: "N",  endSide: "right" },
-  NG:   { angle: 0,   length: 28, voiced: false, curve: 6,  label: "NG", endSide: "right" },
-
-  S:    { angle: 45,  length: 14, voiced: false, curve: 0,  label: "S",  endSide: "top" },
-  Z:    { angle: 45,  length: 14, voiced: true,  curve: 0,  label: "Z",  endSide: "top" },
-  W:    { angle: 45,  length: 24, voiced: false, curve: 10, label: "W",  endSide: "top" },
-  Y:    { angle: 135, length: 24, voiced: false, curve: 8,  label: "Y",  endSide: "left" },
-  H:    { angle: 45,  length: 18, voiced: false, curve: 0,  label: "H",  endSide: "top" },
+  // Upstrokes — written bottom→top
+  // L (Ell): 45° from vertical, up-right
+  L:  { angle: 45,  length: 28, voiced: false, curve: 0,  label: "L",  endSide: "top" },
+  // Ray: 60° from vertical, up-right (shallower than L)
+  RAY: { angle: 30, length: 28, voiced: false, curve: 0, label: "RAY", endSide: "top" },
+  // H (upward): 60° from vertical
+  H2: { angle: 30, length: 18, voiced: false, curve: 0, label: "H2", endSide: "top" },
+  // W (Way): upstroke with hook
+  W:  { angle: 30,  length: 24, voiced: false, curve: 8,  label: "W",  endSide: "top" },
+  // Y (Yay): upstroke
+  Y:  { angle: 30,  length: 24, voiced: false, curve: -8, label: "Y",  endSide: "top" },
 }
 
 function deg2rad(deg: number): number {
@@ -55,7 +71,6 @@ function endpoint(p: Point, angleDeg: number, len: number): Point {
   return { x: p.x + len * Math.cos(rad), y: p.y - len * Math.sin(rad) }
 }
 
-// Minimum x/y extension of a stroke (for bounding box)
 function strokeBounds(points: Point[]): { minX: number; minY: number; maxX: number; maxY: number } {
   return {
     minX: Math.min(...points.map(p => p.x)),
@@ -66,8 +81,8 @@ function strokeBounds(points: Point[]): { minX: number; minY: number; maxX: numb
 }
 
 interface StrokePathData {
-  points: Point[]      // all coordinate pairs: [start, ...(cp), end]
-  commands: string[]   // path commands: ['M', 'L'] or ['M', 'Q']
+  points: Point[]
+  commands: string[]
   end: Point
 }
 
@@ -100,6 +115,13 @@ export interface PitmanRenderResult {
   height: number
 }
 
+function lookupStroke(label: string): PitmanStrokeDef | undefined {
+  let def = STROKE_DEFS[label]
+  if (def) return def
+  def = STROKE_DEFS[label.toUpperCase()]
+  return def
+}
+
 export function renderPitmanOutline(options: PitmanRenderOptions): PitmanRenderResult {
   const scale = options.scale ?? 1
   const pad = 10 * scale
@@ -121,16 +143,16 @@ export function renderPitmanOutline(options: PitmanRenderOptions): PitmanRenderR
   let cursor: Point = { x: baseX, y: baseY }
 
   for (const label of labels) {
-    const def = STROKE_DEFS[label]
+    const def = lookupStroke(label)
     if (!def) continue
 
-    const sw = def.voiced ? 4.5 * scale : 2 * scale
+    const sw = def.voiced ? 5 * scale : 2 * scale
 
     const pathData = strokePathData(def, cursor, scale)
     entries.push({ label, def, pathData, sw })
 
     cursor = { ...pathData.end }
-    const gap = 4 * scale
+    const gap = 2 * scale
     switch (def.endSide) {
       case "right": cursor.x += gap; break
       case "left":  cursor.x -= gap; break
@@ -141,7 +163,6 @@ export function renderPitmanOutline(options: PitmanRenderOptions): PitmanRenderR
 
   if (entries.length === 0) return { svg: "", width: 0, height: 0 }
 
-  // Compute bounding box from all stroke points
   let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity
   for (const e of entries) {
     const b = strokeBounds(e.pathData.points)
@@ -156,7 +177,6 @@ export function renderPitmanOutline(options: PitmanRenderOptions): PitmanRenderR
   const ox = pad - minX
   const oy = pad - minY
 
-  // Build paths by shifting coordinates
   const paths = entries
     .map((e) => {
       const pts = e.pathData.points.map(p => ({
@@ -164,7 +184,6 @@ export function renderPitmanOutline(options: PitmanRenderOptions): PitmanRenderR
         y: (p.y + oy).toFixed(1),
       }))
       const cmds = e.pathData.commands
-      // Commands: 'M' uses 1 point, 'L' uses 1, 'Q' uses 2 (cp then end)
       let d = ""
       let pi = 0
       for (const cmd of cmds) {

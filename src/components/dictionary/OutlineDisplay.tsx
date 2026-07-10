@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { Download, Loader2 } from "lucide-react";
+import { Download } from "lucide-react";
 import { renderPitmanOutline, svgToDataUrl } from "@/features/dictionary/pitman-renderer";
 
 interface OutlineDisplayProps {
@@ -13,60 +13,32 @@ interface OutlineDisplayProps {
 }
 
 export function OutlineDisplay({ outline, text, className, compact }: OutlineDisplayProps) {
-  const displayText = text || outline || "";
   const strokeSequence = outline || "";
 
-  // API-based rendering (primary)
-  const [imgSrc, setImgSrc] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [apiError, setApiError] = useState(false);
-
-  useEffect(() => {
-    if (!displayText.trim()) { setLoading(false); return; }
-
-    setLoading(true);
-    setApiError(false);
-    setImgSrc(null);
-
-    const ac = new AbortController();
-
-    fetch(`/api/pitman-image?text=${encodeURIComponent(displayText.trim())}`, { signal: ac.signal })
-      .then((r) => { if (!r.ok) throw new Error(); return r.blob(); })
-      .then((blob) => { setImgSrc(URL.createObjectURL(blob)); setLoading(false); })
-      .catch((e) => { if (e.name !== "AbortError") { setApiError(true); setLoading(false); } });
-
-    return () => ac.abort();
-  }, [displayText]);
-
-  // SVG fallback (self-contained)
   const svgDataUrl = useMemo(() => {
-    if (!apiError || !strokeSequence) return null;
+    if (!strokeSequence) return null;
     const result = renderPitmanOutline({ strokeOutline: strokeSequence, scale: compact ? 0.6 : 1 });
     if (!result.svg) return null;
     return svgToDataUrl(result.svg);
-  }, [apiError, strokeSequence, compact]);
+  }, [strokeSequence, compact]);
 
   const downloadImage = useCallback(() => {
-    const src = imgSrc || svgDataUrl;
-    if (!src) return;
+    if (!svgDataUrl) return;
     const a = document.createElement("a");
-    a.href = src;
-    const ext = imgSrc ? "gif" : "svg";
-    a.download = `pitman-${displayText.replace(/[^a-zA-Z0-9]/g, "-").slice(0, 30)}.${ext}`;
+    a.href = svgDataUrl;
+    a.download = `pitman-${strokeSequence.replace(/[^a-zA-Z0-9]/g, "-").slice(0, 30)}.svg`;
     a.click();
-  }, [imgSrc, svgDataUrl, displayText]);
-
-  const hasContent = imgSrc || svgDataUrl;
+  }, [svgDataUrl, strokeSequence]);
 
   return (
     <div className={cn("relative p-3 rounded-lg border bg-card/40", className)}>
       <div className="flex items-center justify-between mb-1">
         <h3 className="text-sm font-medium text-muted-foreground">Pitman Shorthand</h3>
-        {hasContent && (
+        {svgDataUrl && (
           <button
             onClick={downloadImage}
             className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-            title={`Download ${imgSrc ? "GIF" : "SVG"}`}
+            title="Download SVG"
           >
             <Download className="w-3.5 h-3.5" />
             Download
@@ -75,32 +47,21 @@ export function OutlineDisplay({ outline, text, className, compact }: OutlineDis
       </div>
 
       <div className={cn("flex items-center justify-center", compact ? "min-h-[40px]" : "min-h-[80px]")}>
-        {loading && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            Rendering...
-          </div>
+        {svgDataUrl && (
+          <img src={svgDataUrl} alt={`Pitman: ${text || strokeSequence}`} className="max-w-full h-auto" />
         )}
 
-        {imgSrc && (
-          <img src={imgSrc} alt={`Pitman: ${displayText}`} className="max-w-full h-auto" style={{ imageRendering: "pixelated" }} />
+        {!svgDataUrl && strokeSequence && (
+          <span className="text-xs text-muted-foreground font-mono">{strokeSequence}</span>
         )}
 
-        {!imgSrc && svgDataUrl && (
-          <img src={svgDataUrl} alt={`Pitman: ${displayText}`} className="max-w-full h-auto" />
-        )}
-
-        {!loading && !hasContent && displayText && (
-          <span className="text-xs text-muted-foreground font-mono">{outline || displayText}</span>
-        )}
-
-        {!loading && !hasContent && !displayText && (
+        {!svgDataUrl && !strokeSequence && (
           <span className="text-xs text-muted-foreground">Enter text to see Pitman shorthand</span>
         )}
       </div>
 
       <div className="mt-1 text-center text-[10px] text-muted-foreground font-mono tracking-wider">
-        {displayText}
+        {text || strokeSequence}
       </div>
 
       {outline && (
