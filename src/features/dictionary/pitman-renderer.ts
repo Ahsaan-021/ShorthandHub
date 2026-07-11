@@ -1,3 +1,6 @@
+// Quarter-circle control-point offset: chord_length * (√2 - 1)
+const QC = (L: number) => Math.round(L * (Math.SQRT2 - 1))
+
 export interface PitmanStrokeDef {
   angle: number
   length: number
@@ -8,58 +11,51 @@ export interface PitmanStrokeDef {
 }
 
 const STROKE_DEFS: Record<string, PitmanStrokeDef> = {
-  // Downstrokes — written top→bottom
-  // P/B: 45° from vertical, right-leaning (backslash direction)
-  P:  { angle: -45, length: 32, voiced: false, curve: 0,  label: "P",  endSide: "bottom" },
-  B:  { angle: -45, length: 32, voiced: true,  curve: 0,  label: "B",  endSide: "bottom" },
-  // T/D: vertical down (straight)
-  T:  { angle: -90, length: 30, voiced: false, curve: 0,  label: "T",  endSide: "bottom" },
-  D:  { angle: -90, length: 30, voiced: true,  curve: 0,  label: "D",  endSide: "bottom" },
-  // CH/J: 30° from vertical, left-leaning (forward-slash direction)
-  CH: { angle: -120, length: 34, voiced: false, curve: 0,  label: "CH", endSide: "bottom" },
-  J:  { angle: -120, length: 34, voiced: true,  curve: 0,  label: "J",  endSide: "bottom" },
-  // K/G: horizontal left→right
-  K:  { angle: 0,   length: 32, voiced: false, curve: 0,  label: "K",  endSide: "right" },
-  G:  { angle: 0,   length: 32, voiced: true,  curve: 0,  label: "G",  endSide: "right" },
-  // R (Ar): same direction as P/B (down-right, 45°)
-  R:  { angle: -45, length: 30, voiced: false, curve: 0,  label: "R",  endSide: "bottom" },
-  // H (downward): 30° from vertical, left-leaning (like CH but lighter)
-  H:  { angle: -120, length: 20, voiced: false, curve: 0,  label: "H",  endSide: "bottom" },
+  // Downstrokes — written top→bottom (SVG y-axis: dy > 0)
+  // P/B: down-right at 45°
+  P:  { angle: -45, length: 30, voiced: false, curve: 0, label: "P",  endSide: "bottom" },
+  B:  { angle: -45, length: 30, voiced: true,  curve: 0, label: "B",  endSide: "bottom" },
+  // T/D: straight down
+  T:  { angle: -90, length: 30, voiced: false, curve: 0, label: "T",  endSide: "bottom" },
+  D:  { angle: -90, length: 30, voiced: true,  curve: 0, label: "D",  endSide: "bottom" },
+  // CH/J: down-left at 60° from vertical
+  CH: { angle: -120, length: 30, voiced: false, curve: 0, label: "CH", endSide: "bottom" },
+  J:  { angle: -120, length: 30, voiced: true,  curve: 0, label: "J",  endSide: "bottom" },
+  // K/G: horizontal right
+  K:  { angle: 0,   length: 30, voiced: false, curve: 0, label: "K",  endSide: "right" },
+  G:  { angle: 0,   length: 30, voiced: true,  curve: 0, label: "G",  endSide: "right" },
+  // R (Ar): same direction as P (down-right)
+  R:  { angle: -45, length: 28, voiced: false, curve: 0, label: "R",  endSide: "bottom" },
+  H:  { angle: -120, length: 20, voiced: false, curve: 0, label: "H",  endSide: "bottom" },
 
-  // Curved downstrokes
-  // F/V: 45° down-right, quarter-circle opening downward
-  F:  { angle: -45, length: 30, voiced: false, curve: -7, label: "F",  endSide: "bottom" },
-  V:  { angle: -45, length: 30, voiced: true,  curve: -7, label: "V",  endSide: "bottom" },
-  // TH/DH: vertical down, quarter-circle opening right
-  TH: { angle: -90, length: 28, voiced: false, curve: 7,  label: "TH", endSide: "bottom" },
-  DH: { angle: -90, length: 28, voiced: true,  curve: 7,  label: "DH", endSide: "bottom" },
-  // S/Z: vertical down, quarter-circle opening left (half-length)
-  S:  { angle: -90, length: 15, voiced: false, curve: -5, label: "S",  endSide: "bottom" },
-  Z:  { angle: -90, length: 15, voiced: true,  curve: -5, label: "Z",  endSide: "bottom" },
-  // SH/ZH: 45° down-right, quarter-circle opening downward
-  SH: { angle: -45, length: 28, voiced: false, curve: -7, label: "SH", endSide: "bottom" },
-  ZH: { angle: -45, length: 28, voiced: true,  curve: -7, label: "ZH", endSide: "bottom" },
+  // Curved downstrokes — exact quarter-circle arcs
+  // F/V: down-right, +curve = convex upward (arch above chord)
+  F:  { angle: -45, length: 30, voiced: false, curve: QC(30), label: "F",  endSide: "bottom" },
+  V:  { angle: -45, length: 30, voiced: true,  curve: QC(30), label: "V",  endSide: "bottom" },
+  // TH/DH: straight down, -curve = opening right (concave right side)
+  TH: { angle: -90, length: 28, voiced: false, curve: -QC(28), label: "TH", endSide: "bottom" },
+  DH: { angle: -90, length: 28, voiced: true,  curve: -QC(28), label: "DH", endSide: "bottom" },
+  // S/Z: short straight down, +curve = hook left
+  S:  { angle: -90, length: 15, voiced: false, curve: QC(15), label: "S",  endSide: "bottom" },
+  Z:  { angle: -90, length: 15, voiced: true,  curve: QC(15), label: "Z",  endSide: "bottom" },
+  // SH/ZH: down-right, +curve = convex upward (same as F/V)
+  SH: { angle: -45, length: 28, voiced: false, curve: QC(28), label: "SH", endSide: "bottom" },
+  ZH: { angle: -45, length: 28, voiced: true,  curve: QC(28), label: "ZH", endSide: "bottom" },
 
   // Horizontal curved strokes (left→right)
-  // M: curves below the baseline (U-shape)
-  M:  { angle: 0,   length: 30, voiced: true,  curve: -8, label: "M",  endSide: "right" },
-  // N/NG: curves above the baseline (arch)
-  N:  { angle: 0,   length: 28, voiced: false, curve: 8,  label: "N",  endSide: "right" },
-  NG: { angle: 0,   length: 28, voiced: false, curve: 8,  label: "NG", endSide: "right" },
-  // NK: horizontal curved, voiced (N + K combined)
-  NK: { angle: 0,   length: 28, voiced: true,  curve: -8, label: "NK", endSide: "right" },
+  // M: -curve = U-shape below baseline
+  M:  { angle: 0, length: 30, voiced: true,  curve: -QC(30), label: "M",  endSide: "right" },
+  // N/NG: +curve = arch above baseline
+  N:  { angle: 0, length: 28, voiced: false, curve: QC(28), label: "N",  endSide: "right" },
+  NG: { angle: 0, length: 28, voiced: false, curve: QC(28), label: "NG", endSide: "right" },
+  NK: { angle: 0, length: 28, voiced: true,  curve: -QC(28), label: "NK", endSide: "right" },
 
-  // Upstrokes — written bottom→top
-  // L (Ell): 45° from vertical, up-right
-  L:  { angle: 45,  length: 28, voiced: false, curve: 0,  label: "L",  endSide: "top" },
-  // Ray: 60° from vertical, up-right (shallower than L)
+  // Upstrokes — written bottom→top (SVG y-axis: dy < 0)
+  L:   { angle: 45, length: 28, voiced: false, curve: 0, label: "L",   endSide: "top" },
   RAY: { angle: 30, length: 28, voiced: false, curve: 0, label: "RAY", endSide: "top" },
-  // H (upward): 60° from vertical
-  H2: { angle: 30, length: 18, voiced: false, curve: 0, label: "H2", endSide: "top" },
-  // W (Way): upstroke with hook
-  W:  { angle: 30,  length: 24, voiced: false, curve: 8,  label: "W",  endSide: "top" },
-  // Y (Yay): upstroke
-  Y:  { angle: 30,  length: 24, voiced: false, curve: -8, label: "Y",  endSide: "top" },
+  H2:  { angle: 30, length: 18, voiced: false, curve: 0, label: "H2",  endSide: "top" },
+  W:   { angle: 30, length: 24, voiced: false, curve: QC(24), label: "W",  endSide: "top" },
+  Y:   { angle: 30, length: 24, voiced: false, curve: -QC(24), label: "Y",  endSide: "top" },
 }
 
 function deg2rad(deg: number): number {
@@ -195,7 +191,7 @@ export function renderPitmanOutline(options: PitmanRenderOptions): PitmanRenderR
     .join("\n")
 
   const svg = [
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w.toFixed(0)} ${h.toFixed(0)}" width="${w.toFixed(0)}" height="${h.toFixed(0)}" fill="none">`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w.toFixed(0)} ${h.toFixed(0)}" width="${w.toFixed(0)}" height="${h.toFixed(0)}" fill="none" color="black">`,
     `  <rect width="100%" height="100%" fill="transparent"/>`,
     paths,
     `</svg>`,
